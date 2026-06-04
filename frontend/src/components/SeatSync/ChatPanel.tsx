@@ -8,7 +8,6 @@ interface Message {
   timestamp: string;
 }
 
-// NEW: This interface tells TypeScript to expect data from App.tsx!
 interface ChatPanelProps {
   messages?: Message[];
   onSendMessage?: (text: string) => void;
@@ -32,13 +31,21 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ messages = [], onSendMessa
   return (
     <div className={styles.chatContainer}>
       <div className={styles.chatHeader}>
-        <div className={styles.statusIndicator}></div>
-        <h3>In-Flight Chat (Private Room)</h3>
+        <div className={styles.statusIndicator}>
+          <div className={styles.ping}></div>
+        </div>
+        <div>
+          <h3>Secure Comms Link</h3>
+          <p className={styles.subStatus}>Encrypted • Peer-to-Peer</p>
+        </div>
       </div>
 
       <div className={styles.messageList}>
         {messages.length === 0 ? (
-          <div className={styles.emptyState}>No messages yet. Say hi to your neighbor!</div>
+          <div className={styles.emptyState}>
+            <span className={styles.emptyIcon}>💬</span>
+            <p>Connection established.<br/>Say hi to your neighbor!</p>
+          </div>
         ) : (
           messages.map((msg) => {
             const isMe = msg.sender.includes('You');
@@ -57,14 +64,21 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ messages = [], onSendMessa
       </div>
 
       <form onSubmit={handleSend} className={styles.inputArea}>
-        <input
-          type="text"
-          className={styles.chatInput}
-          placeholder="Type your encrypted response here..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-        />
-        <button type="submit" className={styles.sendButton}>Send</button>
+        <div className={styles.inputWrapper}>
+          <input
+            type="text"
+            className={styles.chatInput}
+            placeholder="Type a message..."
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+          />
+          <button type="submit" className={styles.sendButton} disabled={!input.trim()}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </div>
       </form>
     </div>
   );

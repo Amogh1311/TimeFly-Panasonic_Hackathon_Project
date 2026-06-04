@@ -31,11 +31,12 @@
 .questionList {
   flex-grow: 1;
   overflow-y: auto;
-  display: flex;
+  display: flex;    
   flex-direction: column;
   gap: 1.5rem;
   padding-right: 0.5rem;
   margin-bottom: 1.5rem;
+  padding-bottom: 150px;
 }
 
 .questionList::-webkit-scrollbar {
@@ -256,6 +257,25 @@
   color: var(--text-primary);
 }
 
+/* --- NEW TERMINATE CONNECTION BUTTON --- */
+.dangerButton {
+  padding: 1rem;
+  background: rgba(255, 68, 68, 0.1);
+  color: #ff4444;
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.dangerButton:hover {
+  background: rgba(255, 68, 68, 0.2);
+  border-color: #ff4444;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 68, 68, 0.2);
+}
+
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -264,4 +284,15 @@
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+.dangerBadge {
+  background: rgba(255, 68, 68, 0.15);
+  color: #ff4444;
+  border: 1px solid rgba(255, 68, 68, 0.4);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  box-shadow: 0 0 15px rgba(255, 68, 68, 0.2);
 }

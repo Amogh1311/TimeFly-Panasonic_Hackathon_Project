@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import styles from './MatchSurvey.module.css';
 
-interface SurveyAnswers {
-  [key: string]: string;
-}
+interface SurveyAnswers { [key: string]: string; }
 
 interface Props {
   onMatchReady: () => void;
   onEditStart: () => void;
+  onDisconnect: () => void;
+  hasPartnerLeft: boolean;          // NEW PROP
+  onAcknowledgeDisconnect: () => void; // NEW PROP
 }
 
 const QUESTIONS = [
@@ -23,17 +24,15 @@ const QUESTIONS = [
   { id: 'q10', label: '10. Favorite Hobby?', options: ['Photography', 'Reading / Literature', 'Gaming / Esports', 'Hiking / Outdoors', 'Cooking / Baking', 'Fitness / Gym', 'Tech / Coding', 'Art / Drawing', 'Writing / Blogging', 'Fashion / Styling'] }
 ];
 
-export const MatchSurvey: React.FC<Props> = ({ onMatchReady, onEditStart }) => {
+export const MatchSurvey: React.FC<Props> = ({ onMatchReady, onEditStart, onDisconnect, hasPartnerLeft, onAcknowledgeDisconnect }) => {
   const [isEditing, setIsEditing] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
   const [answers, setAnswers] = useState<SurveyAnswers>({});
-  
-  // NEW STATE: Tracks which custom dropdown is currently open
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
 
   const handleSelect = (questionId: string, value: string) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
-    setOpenDropdownId(null); // Close the dropdown after selecting
+    setOpenDropdownId(null); 
   };
 
   const handleSubmit = () => {
@@ -50,7 +49,37 @@ export const MatchSurvey: React.FC<Props> = ({ onMatchReady, onEditStart }) => {
     onEditStart();
   };
 
+  const handleDisconnect = () => {
+    const doubleCheck = window.confirm("Are you sure you want to terminate this secure connection? Your chat logs and co-op drawing canvas history will be permanently cleared.");
+    if (doubleCheck) {
+      setIsEditing(true); 
+      onDisconnect();     
+    }
+  };
+
   if (!isEditing) {
+    // --- NEW: THE PARTNER DISCONNECTED VIEW ---
+    if (hasPartnerLeft) {
+      return (
+        <div className={styles.surveyContainer}>
+          <div className={styles.matchResult}>
+            <div className={styles.dangerBadge}>Connection Lost</div>
+            <h2 className={styles.matchTitle}>Session Terminated</h2>
+            <p className={styles.matchDesc}>The passenger in Seat 14B has ended the connection.</p>
+            <div className={styles.actionButtons}>
+              {/* This instantly fires the search again using the ALREADY SAVED answers! */}
+              <button className={styles.submitButton} onClick={() => { onAcknowledgeDisconnect(); handleSubmit(); }}>
+                🔍 Find New Match
+              </button>
+              <button className={styles.secondaryButton} onClick={() => { onAcknowledgeDisconnect(); handleEdit(); }}>
+                ✏️ Edit Preferences
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className={styles.surveyContainer}>
         {isSearching ? (
@@ -70,6 +99,9 @@ export const MatchSurvey: React.FC<Props> = ({ onMatchReady, onEditStart }) => {
               <button className={styles.secondaryButton} onClick={handleEdit}>
                 ✏️ Edit Preferences
               </button>
+              <button className={styles.dangerButton} onClick={handleDisconnect}>
+                🛑 Terminate Connection
+              </button>
             </div>
           </div>
         )}
@@ -88,29 +120,17 @@ export const MatchSurvey: React.FC<Props> = ({ onMatchReady, onEditStart }) => {
         {QUESTIONS.map((q) => (
           <div key={q.id} className={styles.questionBlock}>
             <label className={styles.questionLabel}>{q.label}</label>
-            
-            {/* UPGRADE: Custom React Dropdown */}
             <div className={styles.customSelectWrapper}>
-              <div 
-                className={`${styles.customSelectTrigger} ${openDropdownId === q.id ? styles.isOpen : ''}`}
-                onClick={() => setOpenDropdownId(openDropdownId === q.id ? null : q.id)}
-              >
+              <div className={`${styles.customSelectTrigger} ${openDropdownId === q.id ? styles.isOpen : ''}`} onClick={() => setOpenDropdownId(openDropdownId === q.id ? null : q.id)}>
                 <span>{answers[q.id] || 'Select an option...'}</span>
                 <span className={styles.chevron}>▼</span>
               </div>
-
               {openDropdownId === q.id && (
                 <>
-                  {/* Invisible backdrop to catch outside clicks and close the menu */}
                   <div className={styles.backdrop} onClick={() => setOpenDropdownId(null)} />
-                  
                   <ul className={styles.customSelectMenu}>
                     {q.options.map(opt => (
-                      <li 
-                        key={opt} 
-                        className={`${styles.customSelectOption} ${answers[q.id] === opt ? styles.selectedOption : ''}`}
-                        onClick={() => handleSelect(q.id, opt)}
-                      >
+                      <li key={opt} className={`${styles.customSelectOption} ${answers[q.id] === opt ? styles.selectedOption : ''}`} onClick={() => handleSelect(q.id, opt)}>
                         {opt}
                       </li>
                     ))}
@@ -118,16 +138,11 @@ export const MatchSurvey: React.FC<Props> = ({ onMatchReady, onEditStart }) => {
                 </>
               )}
             </div>
-
           </div>
         ))}
       </div>
 
-      <button 
-        className={styles.submitButton} 
-        onClick={handleSubmit}
-        disabled={Object.keys(answers).length < QUESTIONS.length}
-      >
+      <button className={styles.submitButton} onClick={handleSubmit} disabled={Object.keys(answers).length < QUESTIONS.length}>
         Find My Match
       </button>
     </div>

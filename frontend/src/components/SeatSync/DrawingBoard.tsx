@@ -9,16 +9,24 @@ interface DrawPoint {
   color: string;
 }
 
-// NEW: This interface tells TypeScript to expect stroke data from App.tsx!
 interface DrawingBoardProps {
   incomingStroke?: DrawPoint | null;
   onDrawStroke?: (point: DrawPoint) => void;
 }
 
+// PREMIUM UPGRADE: Pre-defined Neon Palette
+const NEON_COLORS = [
+  '#00d2ff', // Cyan
+  '#ff007f', // Neon Pink
+  '#00ff66', // Neon Green
+  '#ffea00', // Bright Yellow
+  '#ffffff'  // Pure White
+];
+
 export const DrawingBoard: React.FC<DrawingBoardProps> = ({ incomingStroke, onDrawStroke }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [color, setColor] = useState('#00d2ff');
+  const [color, setColor] = useState(NEON_COLORS[0]);
   const lastPos = useRef({ x: 0, y: 0 });
 
   const clearBoard = () => {
@@ -29,7 +37,6 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({ incomingStroke, onDr
     }
   };
 
-  // Sync external incoming strokes painted by the other passenger
   useEffect(() => {
     if (!incomingStroke) return;
     const canvas = canvasRef.current;
@@ -39,6 +46,7 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({ incomingStroke, onDr
       ctx.strokeStyle = incomingStroke.color;
       ctx.lineWidth = 3;
       ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
       ctx.moveTo(incomingStroke.prevX, incomingStroke.prevY);
       ctx.lineTo(incomingStroke.x, incomingStroke.y);
       ctx.stroke();
@@ -59,18 +67,14 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({ incomingStroke, onDr
     ctx.strokeStyle = color;
     ctx.lineWidth = 3;
     ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
     ctx.moveTo(lastPos.current.x, lastPos.current.y);
     ctx.lineTo(currentX, currentY);
     ctx.stroke();
 
-    // Send stroke data to App.tsx so it can be routed through the WebSocket
     if (onDrawStroke) {
       onDrawStroke({
-        x: currentX,
-        y: currentY,
-        prevX: lastPos.current.x,
-        prevY: lastPos.current.y,
-        color
+        x: currentX, y: currentY, prevX: lastPos.current.x, prevY: lastPos.current.y, color
       });
     }
 
@@ -80,33 +84,53 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({ incomingStroke, onDr
   return (
     <div className={styles.boardContainer}>
       <div className={styles.controlHeader}>
-        <h4>Co-Op Drawing Canvas</h4>
+        <div className={styles.titleGroup}>
+          <h4>Shared Canvas</h4>
+          <span className={styles.liveTag}>LIVE</span>
+        </div>
+        
         <div className={styles.tools}>
-          <input 
-            type="color" 
-            className={styles.colorPicker} 
-            value={color} 
-            onChange={(e) => setColor(e.target.value)} 
-          />
-          <button className={styles.clearBtn} onClick={clearBoard}>Reset Canvas</button>
+          {/* PREMIUM UPGRADE: Custom Color Swatches */}
+          <div className={styles.palette}>
+            {NEON_COLORS.map(c => (
+              <button
+                key={c}
+                className={`${styles.swatch} ${color === c ? styles.activeSwatch : ''}`}
+                style={{ backgroundColor: c, boxShadow: color === c ? `0 0 10px ${c}` : 'none' }}
+                onClick={() => setColor(c)}
+                title={c}
+              />
+            ))}
+          </div>
+          
+          <button className={styles.clearBtn} onClick={clearBoard}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            Clear
+          </button>
         </div>
       </div>
-      <canvas
-        ref={canvasRef}
-        className={styles.canvasElement}
-        width={500}
-        height={220}
-        onMouseDown={(e) => {
-          setIsDrawing(true);
-          const rect = canvasRef.current?.getBoundingClientRect();
-          if (rect) {
-            lastPos.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
-          }
-        }}
-        onMouseMove={draw}
-        onMouseUp={() => setIsDrawing(false)}
-        onMouseLeave={() => setIsDrawing(false)}
-      />
+
+      <div className={styles.canvasWrapper} style={{ '--glow-color': color } as React.CSSProperties}>
+        <canvas
+          ref={canvasRef}
+          className={styles.canvasElement}
+          width={600}
+          height={260}
+          onMouseDown={(e) => {
+            setIsDrawing(true);
+            const rect = canvasRef.current?.getBoundingClientRect();
+            if (rect) {
+              lastPos.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+            }
+          }}
+          onMouseMove={draw}
+          onMouseUp={() => setIsDrawing(false)}
+          onMouseLeave={() => setIsDrawing(false)}
+        />
+      </div>
     </div>
   );
 };

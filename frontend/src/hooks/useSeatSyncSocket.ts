@@ -18,9 +18,10 @@ export interface DrawPoint {
 export const useSeatSyncSocket = (roomName: string, isMatched: boolean, mySeat: string) => {
   const [isConnected, setIsConnected] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  
-  // FIX 1: Removed 'setIncomingDrawPoint' from the array since we aren't using it until the backend is ready
   const [incomingDrawPoint] = useState<DrawPoint | null>(null);
+  
+  // NEW: Track if the partner dropped the connection
+  const [hasPartnerLeft, setHasPartnerLeft] = useState(false);
 
   const partnerSeat = mySeat === '12A' ? '14B' : '12A';
 
@@ -28,10 +29,12 @@ export const useSeatSyncSocket = (roomName: string, isMatched: boolean, mySeat: 
     if (!isMatched) {
       setIsConnected(false);
       setMessages([]);
+      setHasPartnerLeft(false); // Reset this when you start a new search
       return;
     }
 
     setIsConnected(true);
+    setHasPartnerLeft(false);
     
     const welcomeTimeout = setTimeout(() => {
       const systemMsg: ChatMessage = {
@@ -53,25 +56,31 @@ export const useSeatSyncSocket = (roomName: string, isMatched: boolean, mySeat: 
       text,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
-    
     setMessages(prev => [...prev, newMessage]);
-    
-    // [BACKEND NOTE]: Prathamesh will uncomment this
     // socket.emit('send_message', { room: roomName, message: newMessage });
   }, [mySeat, roomName]);
 
   const sendDrawStroke = useCallback((point: DrawPoint) => {
-    // FIX 2: Added a console log to "use" the point variable and prove it tracks your mouse
-    console.debug(`[Socket Hook] Broadcasting stroke for ${roomName}:`, point);
-    
-    // [BACKEND NOTE]: Prathamesh will uncomment this
     // socket.emit('draw_stroke', { room: roomName, point });
   }, [roomName]);
+
+  // DEV TOOL: Simulates receiving a "Disconnect" signal from the backend
+  const simulatePartnerDisconnect = useCallback(() => {
+    setHasPartnerLeft(true);
+  }, []);
+
+  // [BACKEND NOTE]: Prathamesh will uncomment this listener
+  // useEffect(() => {
+  //   socket.on('partner_disconnected', () => setHasPartnerLeft(true));
+  //   return () => socket.off('partner_disconnected');
+  // }, []);
 
   return {
     isConnected,
     messages,
     incomingDrawPoint,
+    hasPartnerLeft,             // Export the state
+    simulatePartnerDisconnect,  // Export the dev tool
     sendMessage,
     sendDrawStroke
   };
