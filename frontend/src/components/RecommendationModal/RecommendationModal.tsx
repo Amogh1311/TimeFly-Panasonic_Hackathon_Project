@@ -1,0 +1,65 @@
+import React from 'react';
+import styles from './RecommendationModal.module.css';
+
+// The exact data structure the AI backend will send us
+export interface RecommendedItem {
+  id: string;
+  title: string;
+  thumbnail_url: string;
+  media_type: string;
+}
+
+export interface AiPayload {
+  greeting: string;
+  detected_vibe: string;
+  items: RecommendedItem[];
+}
+
+interface Props {
+  isOpen: boolean;
+  onClose: () => void;
+  payload: AiPayload | null;
+}
+
+export const RecommendationModal: React.FC<Props> = ({ isOpen, onClose, payload }) => {
+  if (!isOpen || !payload) return null;
+
+  return (
+    <div className={styles.modalOverlay}>
+      <div className={styles.modalContent}>
+        
+        {/* Top Header Section with AI Greeting */}
+        <div className={styles.modalHeader}>
+          <div className={styles.aiBadge}>
+            <span className={styles.pulseDot}></span>
+            AI Assistant Active
+          </div>
+          <button className={styles.closeButton} onClick={onClose}>✕</button>
+        </div>
+
+        <div className={styles.greetingSection}>
+          <h2 className={styles.greetingText}>"{payload.greeting}"</h2>
+          <p className={styles.vibeText}>Optimizing for: <span className={styles.highlight}>{payload.detected_vibe}</span></p>
+        </div>
+
+        {/* The 3 Recommended Items */}
+        <div className={styles.recommendationGrid}>
+          {payload.items.map((item) => (
+            <div key={item.id} className={styles.itemCard}>
+              <img src={item.thumbnail_url} alt={item.title} className={styles.itemImage} />
+              <div className={styles.itemDetails}>
+                <span className={styles.itemType}>{item.media_type}</span>
+                <h4 className={styles.itemTitle}>{item.title}</h4>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <button className={styles.applyButton} onClick={onClose}>
+          Apply Preferences
+        </button>
+
+      </div>
+    </div>
+  );
+};

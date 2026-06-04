@@ -1,0 +1,116 @@
+.appContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background: radial-gradient(circle at 50% 0%, #162235 0%, var(--bg-primary) 70%);
+}
+
+/* Status Bar Styling */
+.statusBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+  padding: 0 2rem;
+  background-color: rgba(10, 14, 23, 0.8);
+  border-bottom: 1px solid var(--border-color);
+  backdrop-filter: blur(10px);
+  z-index: 10;
+}
+
+.brandText {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.brandAccent {
+  color: var(--accent-cyan);
+}
+
+.airlineTag {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  margin-left: 1rem;
+  border-left: 1px solid var(--border-color);
+  padding-left: 1rem;
+}
+
+.flightMetrics {
+  display: flex;
+  gap: 2rem;
+}
+
+.metricItem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.metricLabel {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+}
+
+.metricValue {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent-cyan);
+}
+
+/* Structural Split System */
+.mainContent {
+  display: flex;
+  flex: 1;
+  overflow: hidden; /* Prevents unwanted global page scrolling */
+  padding: 1.5rem;
+  gap: 1.5rem;
+}
+
+.dashboardSection {
+  flex: 7; /* Dictates exact 70% visual width proportion */
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden;
+}
+
+.sidebarSection {
+  flex: 3; /* Dictates exact 30% visual width proportion */
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+/* Premium Placeholder Cards styling */
+.placeholderCard {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  transition: var(--transition-smooth);
+}
+
+.placeholderCard h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.placeholderCard p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}

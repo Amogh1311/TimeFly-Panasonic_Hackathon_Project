@@ -1,0 +1,77 @@
+.boardContainer {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.boardHeader {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.boardHeader h3 {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.clearButton {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.clearButton:hover {
+  background: rgba(239, 68, 68, 0.1); /* Slight red tint on hover */
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
+.canvasWrapper {
+  flex-grow: 1;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  background: var(--bg-primary); /* Darkest background for high contrast */
+}
+
+.canvasElement {
+  background: rgba(26, 35, 51, 0.5);
+  border: 1px dashed var(--border-color);
+  border-radius: 12px;
+  cursor: crosshair;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.watermark {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 2rem;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  pointer-events: none; /* Ensures you can draw right over the text */
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
