@@ -1,0 +1,10 @@
+[
+  { "id": "1", "title": "Midnight Coffee Shop", "media_type": "Music", "tags": ["Relaxing", "Turbulence", "Cozy", "Night"], "thumbnail_url": "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800&q=80" },
+  { "id": "2", "title": "The Office", "media_type": "Video", "tags": ["Comedy", "Upbeat", "Daytime", "Short"], "thumbnail_url": "https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?w=800&q=80" },
+  { "id": "3", "title": "Deep Sleep Meditation", "media_type": "Audiobook", "tags": ["Sleep", "Turbulence", "Night", "Calm"], "thumbnail_url": "https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=800&q=80" },
+  { "id": "4", "title": "Planet Earth", "media_type": "Documentary", "tags": ["Nature", "Relaxing", "Daytime", "Long"], "thumbnail_url": "https://images.unsplash.com/photo-1610992015732-284000305018?w=800&q=80" },
+  { "id": "5", "title": "Lofi Beats", "media_type": "Music", "tags": ["Focus", "Work", "Relaxing", "Daytime"], "thumbnail_url": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&q=80" },
+  { "id": "6", "title": "Mad Max: Fury Road", "media_type": "Video", "tags": ["Action", "Exciting", "Daytime", "Long"], "thumbnail_url": "https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?w=800&q=80" },
+  { "id": "7", "title": "Acoustic Covers", "media_type": "Music", "tags": ["Upbeat", "Morning", "Relaxing"], "thumbnail_url": "https://images.unsplash.com/photo-1485579149621-3123dd97988d?w=800&q=80" },
+  { "id": "8", "title": "Standup Comedy Special", "media_type": "Video", "tags": ["Comedy", "Evening", "Upbeat"], "thumbnail_url": "https://images.unsplash.com/photo-1585699324551-f6c309eedeca?w=800&q=80" }
+]
