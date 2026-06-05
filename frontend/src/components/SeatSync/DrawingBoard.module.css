@@ -121,3 +121,101 @@
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
 }
+
+/* =========================================
+   NEW GAME CHAT STYLING
+   ========================================= */
+.gameSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  height: 140px; /* Fixed height for the guessing area below canvas */
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 1rem;
+}
+
+.guessList {
+  flex-grow: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.guessList::-webkit-scrollbar { 
+  width: 4px; 
+}
+
+.guessList::-webkit-scrollbar-thumb { 
+  background: rgba(0, 210, 255, 0.3); 
+  border-radius: 10px; 
+}
+
+.emptyGame {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-align: center;
+  margin: auto;
+  font-style: italic;
+}
+
+.guessRow {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  animation: slideUp 0.2s ease-out;
+}
+
+.guesserName {
+  font-weight: bold;
+  color: var(--accent-cyan);
+  margin-right: 0.5rem;
+}
+
+.guessText {
+  color: white;
+}
+
+.guessForm {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.guessInput {
+  flex-grow: 1;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  color: white;
+  font-size: 0.85rem;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.guessInput:focus {
+  border-color: var(--accent-cyan);
+}
+
+.guessBtn {
+  background: var(--accent-cyan);
+  color: black;
+  border: none;
+  border-radius: 20px;
+  padding: 0 1.25rem;
+  font-weight: bold;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.guessBtn:disabled {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.3);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}

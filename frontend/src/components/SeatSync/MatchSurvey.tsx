@@ -4,11 +4,13 @@ import styles from './MatchSurvey.module.css';
 interface SurveyAnswers { [key: string]: string; }
 
 interface Props {
+  matchRequestStatus: 'idle' | 'pending' | 'accepted' | 'declined'; // NEW: Handshake status
+  onSendMatchRequest: (answers: any) => void;                       // NEW: Trigger the request
   onMatchReady: () => void;
   onEditStart: () => void;
   onDisconnect: () => void;
-  hasPartnerLeft: boolean;          // NEW PROP
-  onAcknowledgeDisconnect: () => void; // NEW PROP
+  hasPartnerLeft: boolean;          
+  onAcknowledgeDisconnect: () => void; 
 }
 
 const QUESTIONS = [
@@ -24,11 +26,20 @@ const QUESTIONS = [
   { id: 'q10', label: '10. Favorite Hobby?', options: ['Photography', 'Reading / Literature', 'Gaming / Esports', 'Hiking / Outdoors', 'Cooking / Baking', 'Fitness / Gym', 'Tech / Coding', 'Art / Drawing', 'Writing / Blogging', 'Fashion / Styling'] }
 ];
 
-export const MatchSurvey: React.FC<Props> = ({ onMatchReady, onEditStart, onDisconnect, hasPartnerLeft, onAcknowledgeDisconnect }) => {
+export const MatchSurvey: React.FC<Props> = ({ 
+  matchRequestStatus, 
+  onSendMatchRequest, 
+  onMatchReady, 
+  onEditStart, 
+  onDisconnect, 
+  hasPartnerLeft, 
+  onAcknowledgeDisconnect 
+}) => {
   const [isEditing, setIsEditing] = useState(true);
-  const [isSearching, setIsSearching] = useState(false);
   const [answers, setAnswers] = useState<SurveyAnswers>({});
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+  
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const handleSelect = (questionId: string, value: string) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
@@ -37,11 +48,8 @@ export const MatchSurvey: React.FC<Props> = ({ onMatchReady, onEditStart, onDisc
 
   const handleSubmit = () => {
     setIsEditing(false);
-    setIsSearching(true);
-    setTimeout(() => {
-      setIsSearching(false);
-      onMatchReady(); 
-    }, 1500);
+    // NEW: Fire the actual request out to the socket instead of just a generic timeout!
+    onSendMatchRequest(answers);
   };
 
   const handleEdit = () => {
@@ -49,16 +57,13 @@ export const MatchSurvey: React.FC<Props> = ({ onMatchReady, onEditStart, onDisc
     onEditStart();
   };
 
-  const handleDisconnect = () => {
-    const doubleCheck = window.confirm("Are you sure you want to terminate this secure connection? Your chat logs and co-op drawing canvas history will be permanently cleared.");
-    if (doubleCheck) {
-      setIsEditing(true); 
-      onDisconnect();     
-    }
+  const executeDisconnect = () => {
+    setShowConfirmModal(false);
+    setIsEditing(true); 
+    onDisconnect();     
   };
 
   if (!isEditing) {
-    // --- NEW: THE PARTNER DISCONNECTED VIEW ---
     if (hasPartnerLeft) {
       return (
         <div className={styles.surveyContainer}>
@@ -67,7 +72,6 @@ export const MatchSurvey: React.FC<Props> = ({ onMatchReady, onEditStart, onDisc
             <h2 className={styles.matchTitle}>Session Terminated</h2>
             <p className={styles.matchDesc}>The passenger in Seat 14B has ended the connection.</p>
             <div className={styles.actionButtons}>
-              {/* This instantly fires the search again using the ALREADY SAVED answers! */}
               <button className={styles.submitButton} onClick={() => { onAcknowledgeDisconnect(); handleSubmit(); }}>
                 🔍 Find New Match
               </button>
@@ -80,31 +84,76 @@ export const MatchSurvey: React.FC<Props> = ({ onMatchReady, onEditStart, onDisc
       );
     }
 
-    return (
-      <div className={styles.surveyContainer}>
-        {isSearching ? (
+    // NEW: The "Waiting for Accept/Decline" Loading State
+    if (matchRequestStatus === 'pending') {
+      return (
+        <div className={styles.surveyContainer}>
           <div className={styles.searchingState}>
             <div className={styles.radarSpinner}></div>
             <h3>Finding Your Match...</h3>
-            <p>Scanning the cabin for similar interests.</p>
+            <p>Cosine Matcher found <strong>Seat 14B (94% Compatibility)</strong>.</p>
+            <p style={{ color: 'var(--accent-cyan)', fontWeight: 'bold', marginTop: '1rem', animation: 'pulse 1.5s infinite' }}>
+              Sending Connection Request...
+            </p>
           </div>
-        ) : (
+        </div>
+      );
+    }
+
+    // NEW: The "Rejected" UI State
+    if (matchRequestStatus === 'declined') {
+      return (
+        <div className={styles.surveyContainer}>
           <div className={styles.matchResult}>
-            <div className={styles.matchBadge}>94% Match</div>
-            <h2 className={styles.matchTitle}>Connected with Seat 14B</h2>
+            <div className={styles.dangerBadge} style={{ background: 'rgba(255, 68, 68, 0.2)', border: '1px solid #ff4444', color: '#ff4444' }}>
+              Connection Refused
+            </div>
+            <h2 className={styles.matchTitle}>Request Declined</h2>
             <p className={styles.matchDesc}>
-              They share your preference for <strong>{answers['q2'] || 'similar media'}</strong> and prefer a <strong>{answers['q3'] || 'similar'}</strong> flight.
+              Seat 14B is currently busy or prefers not to connect right now. Don't worry, there are plenty of other passengers onboard!
             </p>
             <div className={styles.actionButtons}>
-              <button className={styles.secondaryButton} onClick={handleEdit}>
-                ✏️ Edit Preferences
-              </button>
-              <button className={styles.dangerButton} onClick={handleDisconnect}>
-                🛑 Terminate Connection
+              <button className={styles.submitButton} style={{ width: '100%' }} onClick={handleEdit}>
+                🔙 Return to Survey & Try Again
               </button>
             </div>
           </div>
+        </div>
+      );
+    }
+
+    // If accepted, render the standard active match UI
+    return (
+      <div className={styles.surveyContainer} style={{ position: 'relative' }}>
+        
+        {showConfirmModal && (
+          <div className={styles.modalOverlay}>
+            <div className={styles.modalBox}>
+              <h3>Terminate Connection?</h3>
+              <p>Your chat logs and game history will be permanently wiped to protect your privacy.</p>
+              <div className={styles.modalActions}>
+                <button className={styles.modalCancelBtn} onClick={() => setShowConfirmModal(false)}>Cancel</button>
+                <button className={styles.modalConfirmBtn} onClick={executeDisconnect}>Terminate</button>
+              </div>
+            </div>
+          </div>
         )}
+
+        <div className={styles.matchResult}>
+          <div className={styles.matchBadge}>94% Match</div>
+          <h2 className={styles.matchTitle}>Connected with Seat 14B</h2>
+          <p className={styles.matchDesc}>
+            They share your preference for <strong>{answers['q2'] || 'similar media'}</strong> and prefer a <strong>{answers['q3'] || 'similar'}</strong> flight.
+          </p>
+          <div className={styles.actionButtons}>
+            <button className={styles.secondaryButton} onClick={handleEdit}>
+              ✏️ Edit Preferences
+            </button>
+            <button className={styles.dangerButton} onClick={() => setShowConfirmModal(true)}>
+              🛑 Terminate Connection
+            </button>
+          </div>
+        </div>
       </div>
     );
   }

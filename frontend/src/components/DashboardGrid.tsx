@@ -1,7 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './DashboardGrid.module.css';
 
-// 1. Define the Media Types
+// We redefine the interface here so we don't have to worry about import paths
+export interface FlightTelemetry {
+  weather: string;
+  flightPhase: string;
+  passengerProfile: string;
+  passengerAge: string;
+}
+
+interface DashboardGridProps {
+  telemetry?: FlightTelemetry;
+}
+
 type MediaType = 'Movie' | 'Music' | 'TV Show' | 'Audiobook' | 'Documentary';
 
 interface MediaItem {
@@ -12,7 +23,6 @@ interface MediaItem {
   thumbnail: string;
 }
 
-// 2. The 50-Item Master Database
 const MOCK_MEDIA: MediaItem[] = [
   // MOVIES
   { id: 'm1', title: 'Dune: Part Two', type: 'Movie', matchScore: 98, thumbnail: 'https://picsum.photos/seed/m1/400/300' },
@@ -77,26 +87,61 @@ const MOCK_MEDIA: MediaItem[] = [
 
 const FILTERS = ['All', 'Movie', 'TV Show', 'Music', 'Audiobook', 'Documentary'];
 
-export const DashboardGrid: React.FC = () => {
+export const DashboardGrid: React.FC<DashboardGridProps> = ({ telemetry }) => {
   const [activeFilter, setActiveFilter] = useState('All');
+  
+  // NEW: State for adaptive ML fetching
+  const [isRecalculating, setIsRecalculating] = useState(false);
+  const [adaptiveMedia, setAdaptiveMedia] = useState<MediaItem[]>(MOCK_MEDIA);
 
-  // Filter the massive array based on the selected pill
-  const filteredMedia = MOCK_MEDIA.filter(item => 
+  // NEW: Listen to Telemetry Changes!
+  useEffect(() => {
+    if (!telemetry) return;
+
+    // Show the loading state
+    setIsRecalculating(true);
+
+    // [BACKEND NOTE]: Tomorrow, replace this setTimeout with your fetch() to FastAPI!
+    // Example: fetch('/api/recommend', { method: 'POST', body: JSON.stringify(telemetry) })
+    const mockNetworkCall = setTimeout(() => {
+      
+      // For now, we mock the AI by shuffling the array to simulate a newly curated list
+      const mockReorderedMedia = [...MOCK_MEDIA].sort(() => 0.5 - Math.random());
+      
+      setAdaptiveMedia(mockReorderedMedia);
+      setIsRecalculating(false);
+      
+    }, 800); // 800ms gives just enough time to see the cool loading animation
+
+    return () => clearTimeout(mockNetworkCall);
+  }, [telemetry]); // <-- This array ensures it runs every time telemetry changes
+
+  // Filter the dynamically adaptive array based on the selected pill
+  const filteredMedia = adaptiveMedia.filter(item => 
     activeFilter === 'All' || item.type === activeFilter
   );
 
   return (
-    <div className={styles.dashboardContainer}>
+    <div className={styles.dashboardContainer} style={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column' }}>
+      
       <div className={styles.header}>
-        <h2>Curated For You</h2>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <h2>Curated For You</h2>
+          {/* Subtle live indicator showing the active AI context */}
+          {telemetry && (
+            <span style={{ fontSize: '0.8rem', color: 'var(--accent-cyan)', background: 'rgba(0, 210, 255, 0.1)', padding: '0.3rem 0.8rem', borderRadius: '12px', border: '1px solid rgba(0, 210, 255, 0.2)' }}>
+              Best Content suited for: {telemetry.flightPhase} / {telemetry.weather}
+            </span>
+          )}
+        </div>
         
-        {/* NEW: Dynamic Category Filtering Navigation */}
         <div className={styles.filterBar}>
           {FILTERS.map(filter => (
             <button 
               key={filter} 
               className={`${styles.filterPill} ${activeFilter === filter ? styles.activePill : ''}`}
               onClick={() => setActiveFilter(filter)}
+              disabled={isRecalculating} // Prevent clicking while AI is "thinking"
             >
               {filter}
             </button>
@@ -104,26 +149,49 @@ export const DashboardGrid: React.FC = () => {
         </div>
       </div>
 
-      <div className={styles.grid}>
-        {filteredMedia.map(item => (
-          <div key={item.id} className={styles.mediaCard}>
-            
-            <div className={styles.thumbnailWrapper}>
-              <img src={item.thumbnail} alt={item.title} className={styles.thumbnail} />
+      {/* NEW: Buttery smooth AI Recalculating Overlay */}
+      {isRecalculating ? (
+        <div style={{ 
+          flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', 
+          animation: 'fadeIn 0.3s ease-out' 
+        }}>
+          <div style={{
+            width: '60px', height: '60px', border: '4px solid rgba(0, 210, 255, 0.1)', 
+            borderTopColor: 'var(--accent-cyan)', borderRadius: '50%', 
+            animation: 'spin 1s linear infinite', marginBottom: '1.5rem'
+          }} />
+          <h3 style={{ color: 'var(--accent-cyan)', marginBottom: '0.5rem' }}>AI Processing...</h3>
+          <p style={{ color: 'var(--text-secondary)' }}>Adapting media to {telemetry?.weather} conditions.</p>
+        </div>
+      ) : (
+        <div className={styles.grid}>
+          {filteredMedia.map(item => (
+            <div key={item.id} className={styles.mediaCard} style={{ animation: 'fadeIn 0.5s ease-out' }}>
               
-              {/* NEW: The Glassmorphism Play Overlay */}
-              <div className={styles.playOverlay}>
-                <button className={styles.playButton}>▶ Play Now</button>
+              <div className={styles.thumbnailWrapper}>
+                <img src={item.thumbnail} alt={item.title} className={styles.thumbnail} />
+                
+                <div className={styles.playOverlay}>
+                  <button className={styles.playButton}>▶ Play Now</button>
+                </div>
+              </div>
+
+              <div className={styles.cardInfo}>
+                <h4 className={styles.title}>{item.title}</h4>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <p className={styles.type}>{item.type}</p>
+                </div>
               </div>
             </div>
-
-            <div className={styles.cardInfo}>
-              <h4 className={styles.title}>{item.title}</h4>
-              <p className={styles.type}>{item.type}</p>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
+      
+      {/* Fallback keyframes just in case your CSS doesn't have it globally */}
+      <style>{`
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+      `}</style>
     </div>
   );
 };

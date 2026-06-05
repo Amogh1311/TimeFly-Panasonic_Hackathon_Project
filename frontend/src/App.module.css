@@ -114,3 +114,50 @@
   font-size: 0.875rem;
   color: var(--text-secondary);
 }
+
+.navButton {
+  position: relative;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  border: 1px solid var(--accent-cyan);
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navButtonInactive {
+  background: transparent;
+  color: white;
+}
+
+.navButtonInactive:hover {
+  background: rgba(0, 210, 255, 0.15);
+  box-shadow: 0 0 10px rgba(0, 210, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.navButtonActive {
+  background: var(--accent-cyan);
+  color: #000;
+  box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+}
+
+.breakButton {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--text-secondary);
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.breakButton:hover {
+  color: white;
+  border-color: white;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}

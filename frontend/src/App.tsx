@@ -8,6 +8,7 @@ import { useIdleTimer } from './hooks/useIdleTimer';
 import { MatchSurvey } from './components/SeatSync/MatchSurvey';
 import { ChatPanel } from './components/SeatSync/ChatPanel';
 import { DrawingBoard } from './components/SeatSync/DrawingBoard';
+import { ArtilleryGame } from './components/SeatSync/ArtilleryGame';
 import { useSeatSyncSocket } from './hooks/useSeatSyncSocket';
 
 export interface FlightTelemetry {
@@ -34,6 +35,7 @@ const MOCK_AI_RESPONSE: AiPayload = {
 
 export const App: React.FC = () => {
   const currentSeat = new URLSearchParams(window.location.search).get('seat') || '12A';
+  const partnerSeat = currentSeat === '12A' ? '14B' : '12A';
 
   const [telemetry, setTelemetry] = useState<FlightTelemetry>({
     weather: 'Clear Skies', flightPhase: 'Cruising', passengerProfile: 'Business Traveler', passengerAge: '28'
@@ -49,6 +51,9 @@ export const App: React.FC = () => {
   const timeString = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   const [activeTab, setActiveTab] = useState<'media' | 'social'>('media');
+  const [activeGame, setActiveGame] = useState<'draw' | 'artillery'>('draw');
+  const [gameStates, setGameStates] = useState({ draw: false, artillery: false });
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [aiData, setAiData] = useState<AiPayload | null>(null);
   const [isSeatSyncMatched, setIsSeatSyncMatched] = useState(false);
@@ -59,14 +64,22 @@ export const App: React.FC = () => {
   const [toastType, setToastType] = useState<'message' | 'alert'>('message');
   const [hasUnreadIndicator, setHasUnreadIndicator] = useState(false);
 
-  // DESTRUCTURE THE NEW PARTNER VARS
-  const { messages, incomingDrawPoint, sendMessage, sendDrawStroke, hasPartnerLeft, simulatePartnerDisconnect } = useSeatSyncSocket(
-    'room_12A_14B', 
-    isSeatSyncMatched,
-    currentSeat 
-  );
+  // UPDATED: Destructuring the new Matchmaking functions
+  const { 
+    messages, incomingDrawPoint, sendMessage, sendDrawStroke, hasPartnerLeft, simulatePartnerDisconnect,
+    gameGuesses, sendGameGuess, activeTurnSeat,
+    matchRequestStatus, incomingMatchRequest, sendMatchRequest, respondToMatchRequest, simulateIncomingRequest
+  } = useSeatSyncSocket('room_12A_14B', isSeatSyncMatched, currentSeat);
 
-  // 1. WATCH FOR REGULAR MESSAGES
+  const isMyTurn = activeTurnSeat === currentSeat;
+
+  // Auto-connect when our outbound request is accepted
+  useEffect(() => {
+    if (matchRequestStatus === 'accepted' && !isSeatSyncMatched) {
+      setIsSeatSyncMatched(true);
+    }
+  }, [matchRequestStatus, isSeatSyncMatched]);
+
   useEffect(() => {
     if (isSeatSyncMatched && activeTab === 'media' && messages.length > lastMessageCount) {
       const newestMessage = messages[messages.length - 1];
@@ -81,15 +94,13 @@ export const App: React.FC = () => {
     setLastMessageCount(messages.length);
   }, [messages, activeTab, isSeatSyncMatched, lastMessageCount]);
 
-  // 2. WATCH FOR PARTNER DISCONNECTS
   useEffect(() => {
     if (hasPartnerLeft && activeTab === 'media') {
-      const partnerSeat = currentSeat === '12A' ? '14B' : '12A';
       setToastNotification(`Seat ${partnerSeat} has terminated the connection.`);
       setToastType('alert');
       setHasUnreadIndicator(true);
     }
-  }, [hasPartnerLeft, activeTab, currentSeat]);
+  }, [hasPartnerLeft, activeTab, partnerSeat]);
 
   useEffect(() => {
     if (activeTab === 'social') {
@@ -109,13 +120,56 @@ export const App: React.FC = () => {
 
   useIdleTimer({ timeoutMs: 120000, onIdle: handleIdle });
 
+  const handleStartGame = (game: 'draw' | 'artillery') => {
+    setGameStates(prev => ({ ...prev, [game]: true }));
+  };
+
+  const handleQuitGame = (game: 'draw' | 'artillery') => {
+    setGameStates(prev => ({ ...prev, [game]: false }));
+    setToastNotification(`Seat ${currentSeat} quit the ${game === 'draw' ? 'Canvas' : 'Artillery'} game.`);
+    setToastType('alert');
+    setHasUnreadIndicator(true);
+  };
+
   return (
     <div className={styles.appContainer}>
       
+      {/* NEW: Incoming Match Request Modal Overlay */}
+      {incomingMatchRequest && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(5, 8, 15, 0.85)', backdropFilter: 'blur(15px)',
+          zIndex: 100000, display: 'flex', justifyContent: 'center', alignItems: 'center', animation: 'fadeIn 0.3s'
+        }}>
+          <div style={{
+            background: 'rgba(15, 20, 35, 0.95)', border: '1px solid var(--accent-cyan)', borderRadius: '24px',
+            padding: '3rem', maxWidth: '450px', textAlign: 'center', boxShadow: '0 20px 60px rgba(0, 210, 255, 0.2)'
+          }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🤝</div>
+            <h2 style={{ color: 'white', marginBottom: '1rem', fontSize: '1.8rem' }}>Connection Request!</h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', lineHeight: '1.6', marginBottom: '2.5rem' }}>
+              <strong>Seat {incomingMatchRequest.fromSeat}</strong> is trying to connect with you. Based on the survey, we found you two are travel buddies! 😊
+            </p>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+              <button 
+                onClick={() => respondToMatchRequest(false)} 
+                style={{ padding: '0.8rem 1.5rem', background: 'transparent', border: '1px solid #ff4444', color: '#ff4444', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', flex: 1 }}
+              >
+                Decline
+              </button>
+              <button 
+                onClick={() => { respondToMatchRequest(true); setIsSeatSyncMatched(true); setActiveTab('social'); }} 
+                style={{ padding: '0.8rem 1.5rem', background: 'var(--accent-cyan)', border: 'none', color: 'black', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 0 15px rgba(0,210,255,0.4)', flex: 1 }}
+              >
+                Accept Link
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {toastNotification && (
         <div style={{
           position: 'fixed', top: '5.5rem', right: '1.5rem',
-          // DYNAMIC STYLING: Red for alerts, Blue for messages
           background: toastType === 'alert' ? 'rgba(255, 10, 10, 0.9)' : 'rgba(10, 15, 26, 0.9)', 
           backdropFilter: 'blur(12px)',
           border: toastType === 'alert' ? '1px solid #ff4444' : '1px solid var(--accent-cyan)', 
@@ -128,7 +182,7 @@ export const App: React.FC = () => {
             <span style={{ fontSize: '1.5rem' }}>{toastType === 'alert' ? '⚠️' : '💬'}</span>
             <div style={{ overflow: 'hidden' }}>
               <strong style={{ color: toastType === 'alert' ? '#ffcccc' : 'var(--accent-cyan)', fontSize: '0.75rem', display: 'block', letterSpacing: '1px', marginBottom: '0.2rem' }}>
-                {toastType === 'alert' ? 'CONNECTION LOST' : 'NEW COMMS LINK MESSAGE'}
+                {toastType === 'alert' ? 'CONNECTION UPDATE' : 'NEW COMMS LINK MESSAGE'}
               </strong>
               <p style={{ margin: 0, fontSize: '0.9rem', color: 'white', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{toastNotification}</p>
             </div>
@@ -137,23 +191,69 @@ export const App: React.FC = () => {
         </div>
       )}
 
-      {isRestMode && (
-        <div onClick={() => setIsRestMode(false)} style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(5, 8, 15, 0.95)', zIndex: 9999, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: 'white', cursor: 'pointer', backdropFilter: 'blur(20px)' }}>
-          <h1 style={{ fontSize: '3rem', marginBottom: '1rem', color: 'var(--accent-cyan)' }}>🌙 On a Break</h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Tap anywhere on the screen to wake up the system.</p>
-        </div>
-      )}
+      <div 
+        onClick={() => setIsRestMode(false)} 
+        style={{ 
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', 
+          background: 'rgba(5, 8, 15, 0.95)', zIndex: 9999, display: 'flex', 
+          flexDirection: 'column', justifyContent: 'center', alignItems: 'center', 
+          color: 'white', cursor: 'pointer', backdropFilter: 'blur(20px)',
+          opacity: isRestMode ? 1 : 0,
+          visibility: isRestMode ? 'visible' : 'hidden',
+          pointerEvents: isRestMode ? 'auto' : 'none',
+          transition: 'all 0.4s ease-in-out'
+        }}
+      >
+        <h1 style={{ 
+          fontSize: '3rem', marginBottom: '1rem', color: 'var(--accent-cyan)',
+          transform: isRestMode ? 'translateY(0)' : 'translateY(-20px)',
+          transition: 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+        }}>
+          🌙 On a Break
+        </h1>
+        <p style={{ 
+          color: 'var(--text-secondary)',
+          transform: isRestMode ? 'translateY(0)' : 'translateY(20px)',
+          transition: 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+        }}>
+          Tap anywhere on the screen to wake up the system.
+        </p>
+      </div>
 
       <header className={styles.statusBar}>
-        <div className={styles.logoGroup}>
+        <div className={styles.logoGroup} style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
           <span className={styles.brandText}>Time<span className={styles.brandAccent}>Fly</span></span>
-          <span className={styles.airlineTag}>Seat {currentSeat} | {telemetry.flightPhase} Phase | {telemetry.weather}</span>
+          
+          <span style={{ 
+            color: '#ffffff', 
+            fontSize: '2rem', 
+            fontWeight: '900', 
+            letterSpacing: '1px',
+            textShadow: '0 0 15px rgba(255, 255, 255, 0.3)'
+          }}>
+            {currentSeat}
+          </span>
+          
+          <span className={styles.airlineTag} style={{ 
+            borderLeft: '1px solid rgba(255, 255, 255, 0.2)', 
+            paddingLeft: '1.25rem',
+            opacity: 0.9
+          }}>
+            {telemetry.flightPhase} Phase | {telemetry.weather} | {telemetry.passengerProfile}
+          </span>
         </div>
         
         <div style={{ display: 'flex', gap: '1rem' }}>
-          <button style={{ background: activeTab === 'media' ? 'var(--accent-cyan)' : 'transparent', color: activeTab === 'media' ? '#000' : 'white', border: '1px solid var(--accent-cyan)', padding: '0.5rem 1rem', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold' }} onClick={() => setActiveTab('media')}>🎬 Media Portal</button>
-          
-          <button style={{ position: 'relative', background: activeTab === 'social' ? 'var(--accent-cyan)' : 'transparent', color: activeTab === 'social' ? '#000' : 'white', border: '1px solid var(--accent-cyan)', padding: '0.5rem 1rem', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem' }} onClick={() => setActiveTab('social')}>
+          <button 
+            className={`${styles.navButton} ${activeTab === 'media' ? styles.navButtonActive : styles.navButtonInactive}`}
+            onClick={() => setActiveTab('media')}
+          >
+            🎬 Media Portal
+          </button>
+          <button 
+            className={`${styles.navButton} ${activeTab === 'social' ? styles.navButtonActive : styles.navButtonInactive}`}
+            onClick={() => setActiveTab('social')}
+          >
             👋 Connect & Play
             {hasUnreadIndicator && (
               <span style={{ width: '8px', height: '8px', background: toastType === 'alert' ? '#ff4444' : '#ff007f', borderRadius: '50%', display: 'block', boxShadow: `0 0 10px ${toastType === 'alert' ? '#ff4444' : '#ff007f'}` }} />
@@ -163,7 +263,12 @@ export const App: React.FC = () => {
 
         <div className={styles.flightMetrics}>
           <span style={{ color: 'var(--accent-cyan)', fontWeight: 'bold', marginRight: '1rem', fontFamily: 'monospace', fontSize: '1.1rem' }}>{timeString}</span>
-          <button onClick={() => setIsRestMode(true)} style={{ background: 'transparent', color: 'var(--text-secondary)', border: '1px solid var(--text-secondary)', padding: '0.4rem 1rem', borderRadius: '8px', cursor: 'pointer' }}>🌙 Go on Break</button>
+          <button 
+            className={styles.breakButton}
+            onClick={() => setIsRestMode(true)} 
+          >
+            🌙 Go on Break
+          </button>
         </div>
       </header>
 
@@ -171,12 +276,15 @@ export const App: React.FC = () => {
         <section className={styles.dashboardSection}>
           
           <div style={{ display: activeTab === 'media' ? 'block' : 'none', height: '100%' }}>
-            <DashboardGrid />
+            <DashboardGrid telemetry={telemetry} />
           </div>
 
           <div style={{ display: activeTab === 'social' ? 'flex' : 'none', gap: '1.5rem', height: '100%' }}>
             <div style={{ flex: 1, minWidth: '350px' }}>
+              {/* UPDATED: We now pass the MatchStatus and the sendMatchRequest function to the Survey */}
               <MatchSurvey 
+                matchRequestStatus={matchRequestStatus}
+                onSendMatchRequest={sendMatchRequest}
                 onMatchReady={() => setIsSeatSyncMatched(true)} 
                 onEditStart={() => setIsSeatSyncMatched(false)} 
                 onDisconnect={() => {
@@ -189,14 +297,103 @@ export const App: React.FC = () => {
               />
             </div>
             
-            {/* HIDE CHAT AND CANVAS IF THE PARTNER LEFT! */}
             {isSeatSyncMatched && !hasPartnerLeft && (
               <div style={{ flex: 2, display: 'flex', flexDirection: 'column', gap: '1.5rem', animation: 'fadeIn 0.5s ease-out' }}>
                 <div style={{ flex: 1 }}>
                   <ChatPanel messages={messages} onSendMessage={sendMessage} />
                 </div>
-                <div style={{ flex: 1 }}>
-                  <DrawingBoard incomingStroke={incomingDrawPoint} onDrawStroke={sendDrawStroke} />
+                
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  
+                  <div style={{ 
+                    display: 'flex', gap: '0.5rem', background: 'rgba(0,0,0,0.3)', 
+                    padding: '0.4rem', borderRadius: '12px', width: 'fit-content' 
+                  }}>
+                    <button
+                      onClick={() => setActiveGame('draw')}
+                      style={{ 
+                        background: activeGame === 'draw' ? 'var(--accent-cyan)' : 'transparent', 
+                        color: activeGame === 'draw' ? '#000' : 'white', border: 'none', 
+                        padding: '0.4rem 1rem', borderRadius: '8px', cursor: 'pointer', 
+                        fontWeight: 'bold', transition: 'all 0.2s' 
+                      }}
+                    >
+                      🖌️ Canvas Guessing
+                    </button>
+                    <button
+                      onClick={() => setActiveGame('artillery')}
+                      style={{ 
+                        background: activeGame === 'artillery' ? 'var(--accent-cyan)' : 'transparent', 
+                        color: activeGame === 'artillery' ? '#000' : 'white', border: 'none', 
+                        padding: '0.4rem 1rem', borderRadius: '8px', cursor: 'pointer', 
+                        fontWeight: 'bold', transition: 'all 0.2s' 
+                      }}
+                    >
+                      🎯 Neon Artillery
+                    </button>
+                  </div>
+
+                  <div style={{ position: 'relative', flex: 1, minHeight: 0, borderRadius: '16px', overflow: 'hidden' }}>
+                    
+                    <div style={{ 
+                      height: '100%', 
+                      filter: gameStates[activeGame] ? 'none' : 'blur(8px) brightness(0.4)', 
+                      pointerEvents: gameStates[activeGame] ? 'auto' : 'none', 
+                      transition: 'all 0.4s ease-in-out' 
+                    }}>
+                      {activeGame === 'draw' ? (
+                        <DrawingBoard 
+                          incomingStroke={incomingDrawPoint} 
+                          onDrawStroke={sendDrawStroke} 
+                          guesses={gameGuesses}
+                          onSendGuess={sendGameGuess}
+                          isMyTurn={isMyTurn}
+                        />
+                      ) : (
+                        <ArtilleryGame 
+                          playerSeat={currentSeat} 
+                          isMyTurn={isMyTurn}
+                        />
+                      )}
+                    </div>
+
+                    {!gameStates[activeGame] && (
+                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10, background: 'rgba(10, 15, 26, 0.4)' }}>
+                        <button 
+                          onClick={() => handleStartGame(activeGame)} 
+                          style={{ 
+                            padding: '1rem 2rem', background: 'var(--accent-cyan)', color: 'black', 
+                            fontWeight: '900', borderRadius: '30px', border: 'none', cursor: 'pointer', 
+                            fontSize: '1.2rem', boxShadow: '0 0 20px rgba(0, 210, 255, 0.4)',
+                            transition: 'transform 0.2s'
+                          }}
+                          onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+                          onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                        >
+                          ▶ Play {activeGame === 'draw' ? 'Canvas' : 'Artillery'} with {partnerSeat}
+                        </button>
+                      </div>
+                    )}
+
+                    {gameStates[activeGame] && (
+                      <button 
+                        onClick={() => handleQuitGame(activeGame)} 
+                        style={{ 
+                          position: 'absolute', top: '12px', right: '12px', 
+                          background: 'rgba(255, 10, 10, 0.15)', color: '#ff4444', 
+                          border: '1px solid #ff4444', borderRadius: '8px', 
+                          padding: '0.4rem 1rem', cursor: 'pointer', fontWeight: 'bold', 
+                          zIndex: 10, backdropFilter: 'blur(4px)', transition: 'all 0.2s' 
+                        }}
+                        onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(255, 10, 10, 0.3)'; }}
+                        onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(255, 10, 10, 0.15)'; }}
+                      >
+                        🛑 Quit Game
+                      </button>
+                    )}
+
+                  </div>
+                  
                 </div>
               </div>
             )}
@@ -206,18 +403,22 @@ export const App: React.FC = () => {
 
         <aside className={styles.sidebarSection}>
           <FlightSimulatorControls telemetry={telemetry} setTelemetry={setTelemetry} />
-          <button style={{ marginTop: '1.5rem', padding: '1rem', background: 'var(--accent-cyan)', color: '#000', fontWeight: 'bold', border: 'none', borderRadius: '8px', cursor: 'pointer', width: '100%' }} onClick={forceTriggerAI}>🚀 FORCE TRIGGER AI MODAL</button>
+          <button style={{ marginTop: '1.5rem', padding: '1rem', background: 'var(--accent-cyan)', color: '#000', fontWeight: 'bold', border: 'none', borderRadius: '8px', cursor: 'pointer', width: '100%' }} onClick={forceTriggerAI}>Best Recommendations</button>
           
-          {/* DEV TOOL: CLICK THIS TO SIMULATE THE PARTNER DISCONNECTING */}
-          {isSeatSyncMatched && !hasPartnerLeft && (
-            <button 
-              style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(255,0,0,0.1)', color: '#ff4444', border: '1px solid #ff4444', borderRadius: '8px', cursor: 'pointer', width: '100%', fontWeight: 'bold' }} 
-              onClick={simulatePartnerDisconnect}
-            >
-              ⚠️ DEV: Simulate Partner Disconnect
-            </button>
-          )}
-
+          {/* NEW DEV TOOLS */}
+          <div style={{ marginTop: '1rem', border: '1px dashed rgba(255,255,255,0.2)', padding: '1rem', borderRadius: '8px' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textAlign: 'center', margin: '0 0 0.5rem 0' }}>Socket Dev Tools</p>
+            {!isSeatSyncMatched && (
+              <button style={{ padding: '0.8rem', background: 'rgba(0, 210, 255, 0.1)', color: 'var(--accent-cyan)', border: '1px solid var(--accent-cyan)', borderRadius: '8px', cursor: 'pointer', width: '100%', fontWeight: 'bold', marginBottom: '0.5rem' }} onClick={simulateIncomingRequest}>
+                📥 Simulate Incoming Request
+              </button>
+            )}
+            {isSeatSyncMatched && !hasPartnerLeft && (
+              <button style={{ padding: '0.8rem', background: 'rgba(255,0,0,0.1)', color: '#ff4444', border: '1px solid #ff4444', borderRadius: '8px', cursor: 'pointer', width: '100%', fontWeight: 'bold' }} onClick={simulatePartnerDisconnect}>
+                ⚠️ Simulate Partner Disconnect
+              </button>
+            )}
+          </div>
         </aside>
       </main>
 

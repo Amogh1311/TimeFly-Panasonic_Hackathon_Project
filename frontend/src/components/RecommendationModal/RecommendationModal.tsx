@@ -32,7 +32,7 @@ export const RecommendationModal: React.FC<Props> = ({ isOpen, onClose, payload 
         <div className={styles.modalHeader}>
           <div className={styles.aiBadge}>
             <span className={styles.pulseDot}></span>
-            AI Assistant Active
+            Recommendation Assistant
           </div>
           <button className={styles.closeButton} onClick={onClose}>✕</button>
         </div>
