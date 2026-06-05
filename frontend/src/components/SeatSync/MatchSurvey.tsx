@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './MatchSurvey.module.css';
 
 interface SurveyAnswers { [key: string]: string; }
 
 interface Props {
-  matchRequestStatus: 'idle' | 'pending' | 'accepted' | 'declined'; // NEW: Handshake status
-  onSendMatchRequest: (answers: any) => void;                       // NEW: Trigger the request
+  isMatched: boolean; // NEW: Tells the survey if we are connected
+  matchRequestStatus: 'idle' | 'pending' | 'accepted' | 'declined'; 
+  onSendMatchRequest: (answers: any) => void;                       
   onMatchReady: () => void;
   onEditStart: () => void;
   onDisconnect: () => void;
@@ -27,6 +28,7 @@ const QUESTIONS = [
 ];
 
 export const MatchSurvey: React.FC<Props> = ({ 
+  isMatched, // NEW
   matchRequestStatus, 
   onSendMatchRequest, 
   onMatchReady, 
@@ -41,6 +43,13 @@ export const MatchSurvey: React.FC<Props> = ({
   
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
+  // NEW: Force the survey to close if a connection is established externally
+  useEffect(() => {
+    if (isMatched) {
+      setIsEditing(false);
+    }
+  }, [isMatched]);
+
   const handleSelect = (questionId: string, value: string) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
     setOpenDropdownId(null); 
@@ -48,7 +57,6 @@ export const MatchSurvey: React.FC<Props> = ({
 
   const handleSubmit = () => {
     setIsEditing(false);
-    // NEW: Fire the actual request out to the socket instead of just a generic timeout!
     onSendMatchRequest(answers);
   };
 
@@ -84,7 +92,6 @@ export const MatchSurvey: React.FC<Props> = ({
       );
     }
 
-    // NEW: The "Waiting for Accept/Decline" Loading State
     if (matchRequestStatus === 'pending') {
       return (
         <div className={styles.surveyContainer}>
@@ -100,7 +107,6 @@ export const MatchSurvey: React.FC<Props> = ({
       );
     }
 
-    // NEW: The "Rejected" UI State
     if (matchRequestStatus === 'declined') {
       return (
         <div className={styles.surveyContainer}>
@@ -122,7 +128,6 @@ export const MatchSurvey: React.FC<Props> = ({
       );
     }
 
-    // If accepted, render the standard active match UI
     return (
       <div className={styles.surveyContainer} style={{ position: 'relative' }}>
         

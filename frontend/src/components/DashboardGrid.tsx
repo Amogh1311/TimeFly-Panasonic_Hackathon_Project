@@ -90,33 +90,25 @@ const FILTERS = ['All', 'Movie', 'TV Show', 'Music', 'Audiobook', 'Documentary']
 export const DashboardGrid: React.FC<DashboardGridProps> = ({ telemetry }) => {
   const [activeFilter, setActiveFilter] = useState('All');
   
-  // NEW: State for adaptive ML fetching
   const [isRecalculating, setIsRecalculating] = useState(false);
   const [adaptiveMedia, setAdaptiveMedia] = useState<MediaItem[]>(MOCK_MEDIA);
 
-  // NEW: Listen to Telemetry Changes!
   useEffect(() => {
     if (!telemetry) return;
 
-    // Show the loading state
     setIsRecalculating(true);
 
-    // [BACKEND NOTE]: Tomorrow, replace this setTimeout with your fetch() to FastAPI!
-    // Example: fetch('/api/recommend', { method: 'POST', body: JSON.stringify(telemetry) })
     const mockNetworkCall = setTimeout(() => {
-      
-      // For now, we mock the AI by shuffling the array to simulate a newly curated list
       const mockReorderedMedia = [...MOCK_MEDIA].sort(() => 0.5 - Math.random());
       
       setAdaptiveMedia(mockReorderedMedia);
       setIsRecalculating(false);
       
-    }, 800); // 800ms gives just enough time to see the cool loading animation
+    }, 800);
 
     return () => clearTimeout(mockNetworkCall);
-  }, [telemetry]); // <-- This array ensures it runs every time telemetry changes
+  }, [telemetry]);
 
-  // Filter the dynamically adaptive array based on the selected pill
   const filteredMedia = adaptiveMedia.filter(item => 
     activeFilter === 'All' || item.type === activeFilter
   );
@@ -127,7 +119,6 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({ telemetry }) => {
       <div className={styles.header}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <h2>Curated For You</h2>
-          {/* Subtle live indicator showing the active AI context */}
           {telemetry && (
             <span style={{ fontSize: '0.8rem', color: 'var(--accent-cyan)', background: 'rgba(0, 210, 255, 0.1)', padding: '0.3rem 0.8rem', borderRadius: '12px', border: '1px solid rgba(0, 210, 255, 0.2)' }}>
               Best Content suited for: {telemetry.flightPhase} / {telemetry.weather}
@@ -141,7 +132,7 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({ telemetry }) => {
               key={filter} 
               className={`${styles.filterPill} ${activeFilter === filter ? styles.activePill : ''}`}
               onClick={() => setActiveFilter(filter)}
-              disabled={isRecalculating} // Prevent clicking while AI is "thinking"
+              disabled={isRecalculating}
             >
               {filter}
             </button>
@@ -149,7 +140,6 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({ telemetry }) => {
         </div>
       </div>
 
-      {/* NEW: Buttery smooth AI Recalculating Overlay */}
       {isRecalculating ? (
         <div style={{ 
           flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', 
@@ -187,7 +177,6 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({ telemetry }) => {
         </div>
       )}
       
-      {/* Fallback keyframes just in case your CSS doesn't have it globally */}
       <style>{`
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }

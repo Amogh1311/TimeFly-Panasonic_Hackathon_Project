@@ -1,0 +1,7 @@
+[
+  { "passenger_id": "P101", "name": "Sarah Jenkins", "seat": "12A", "vector": [1, 0, 1, 0, 1] },
+  { "passenger_id": "P102", "name": "David Kim", "seat": "14B", "vector": [0, 1, 1, 1, 0] },
+  { "passenger_id": "P103", "name": "Elena Rostova", "seat": "09C", "vector": [1, 1, 0, 0, 1] },
+  { "passenger_id": "P104", "name": "Marcus Vance", "seat": "22D", "vector": [0, 0, 0, 1, 1] },
+  { "passenger_id": "P105", "name": "Priya Patel", "seat": "17F", "vector": [1, 1, 1, 0, 0] }
+]

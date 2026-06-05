@@ -17,6 +17,9 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ messages = [], onSendMessa
   const [input, setInput] = useState('');
   const chatEndRef = useRef<HTMLDivElement>(null);
 
+  // NEW: Grab the current seat from the URL so we know which messages belong to us!
+  const currentSeat = new URLSearchParams(window.location.search).get('seat') || '12A';
+
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -35,7 +38,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ messages = [], onSendMessa
           <div className={styles.ping}></div>
         </div>
         <div>
-          <h3>Secure Comms Link</h3>
+          <h3>Chat with the Buddy</h3>
           <p className={styles.subStatus}>Encrypted • Peer-to-Peer</p>
         </div>
       </div>
@@ -48,11 +51,13 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ messages = [], onSendMessa
           </div>
         ) : (
           messages.map((msg) => {
-            const isMe = msg.sender.includes('You');
+            // FIXED: Now it dynamically checks if the sender matches YOUR current seat
+            const isMe = msg.sender.includes('You') || msg.sender.includes(currentSeat);
+            
             return (
               <div key={msg.id} className={`${styles.msgRow} ${isMe ? styles.meRow : styles.themRow}`}>
                 <div className={styles.msgBubble}>
-                  <div className={styles.senderTag}>{msg.sender}</div>
+                  <div className={styles.senderTag}>{isMe ? 'You' : msg.sender}</div>
                   <p className={styles.msgText}>{msg.text}</p>
                   <span className={styles.timestamp}>{msg.timestamp}</span>
                 </div>

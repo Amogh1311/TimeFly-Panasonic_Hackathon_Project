@@ -98,10 +98,6 @@ export const FlightSimulatorControls: React.FC<Props> = ({ telemetry, setTelemet
         </div>
       </div>
       
-      <div className={styles.systemStatus}>
-        <div className={styles.statusIndicator}></div>
-        <span>AI Engine Connected</span>
-      </div>
     </div>
   );
 };

@@ -1,4 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
+import { io } from 'socket.io-client';
+
+// Connect to the Python server running on your localhost port 8000
+const socket = io('http://localhost:8000');
 
 export interface ChatMessage {
   id: string;
@@ -34,18 +38,36 @@ export const useSeatSyncSocket = (roomName: string, isMatched: boolean, mySeat: 
   const [hasPartnerLeft, setHasPartnerLeft] = useState(false);
   
   // Game States
-  const [incomingDrawPoint] = useState<DrawPoint | null>(null);
+  const [incomingDrawPoint, setIncomingDrawPoint] = useState<DrawPoint | null>(null);
   const [gameGuesses, setGameGuesses] = useState<GameGuess[]>([]);
   const [activeTurnSeat, setActiveTurnSeat] = useState<string>(mySeat);
   const [incomingArtilleryMove, setIncomingArtilleryMove] = useState<ArtilleryMove | null>(null);
   const [partnerGameSession, setPartnerGameSession] = useState<{ game: 'draw' | 'artillery', action: 'start' | 'quit' } | null>(null);
 
-  // NEW: Matchmaking Handshake States
+  // Matchmaking Handshake States
   const [matchRequestStatus, setMatchRequestStatus] = useState<'idle' | 'pending' | 'accepted' | 'declined'>('idle');
   const [incomingMatchRequest, setIncomingMatchRequest] = useState<{fromSeat: string} | null>(null);
 
   const partnerSeat = mySeat === '12A' ? '14B' : '12A';
 
+  // 1. INITIAL REGISTRATION & HANDSHAKE LISTENER
+  useEffect(() => {
+    // Tell the backend exactly which seat we are sitting in the second the app opens
+    socket.emit('register_seat', mySeat);
+
+    // Listen for incoming requests from the backend
+    socket.on('receive_match_request', (data) => setIncomingMatchRequest(data));
+    socket.on('match_request_accepted', () => setMatchRequestStatus('accepted'));
+    socket.on('match_request_declined', () => setMatchRequestStatus('declined'));
+
+    return () => {
+      socket.off('receive_match_request');
+      socket.off('match_request_accepted');
+      socket.off('match_request_declined');
+    };
+  }, [mySeat]);
+
+  // 2. LIVE REAL-TIME DATA SYNC
   useEffect(() => {
     if (!isMatched) {
       setIsConnected(false);
@@ -54,77 +76,63 @@ export const useSeatSyncSocket = (roomName: string, isMatched: boolean, mySeat: 
       setHasPartnerLeft(false);
       setIncomingArtilleryMove(null);
       setPartnerGameSession(null);
-      setMatchRequestStatus('idle'); // Reset match status on disconnect
+      setMatchRequestStatus('idle'); 
       return;
     }
 
     setIsConnected(true);
     setHasPartnerLeft(false);
     
-    // MOCK: Simulate the welcome message
-    const welcomeTimeout = setTimeout(() => {
-      const systemMsg: ChatMessage = {
-        id: 'sys-1',
-        sender: `Seat ${partnerSeat}`, 
-        text: `Hey there! Glad we matched. Super cool that we are both flying out today!`,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      setMessages(prev => [...prev, systemMsg]);
-    }, 2000);
+    // ACTIVE REAL-TIME LISTENERS FROM PRATHAMESH'S BACKEND
+    socket.on('receive_message', (msg: ChatMessage) => {
+      setMessages(prev => [...prev, msg]);
+    });
 
-    // MOCK: Simulate the partner guessing the drawing
-    const guessTimeout = setTimeout(() => {
-      const mockGuess: GameGuess = {
-        id: 'guess-1',
-        sender: `Seat ${partnerSeat}`,
-        text: 'Is it an airplane?? ✈️'
-      };
-      setGameGuesses(prev => [...prev, mockGuess]);
-    }, 6000);
+    socket.on('receive_draw', (point: DrawPoint) => {
+      setIncomingDrawPoint(point);
+    });
 
-    /* ========================================================
-       [TOMORROW'S BACKEND INTEGRATION BLOCK]
-       Delete the timeouts above, and uncomment this section!
-       ========================================================
-       
-       socket.on('receive_match_request', (data) => setIncomingMatchRequest(data));
-       socket.on('match_request_accepted', () => setMatchRequestStatus('accepted'));
-       socket.on('match_request_declined', () => setMatchRequestStatus('declined'));
-       
-       socket.on('receive_message', (msg) => setMessages(prev => [...prev, msg]));
-       socket.on('receive_draw', (point) => setIncomingDrawPoint(point));
-       socket.on('receive_guess', (guess) => setGameGuesses(prev => [...prev, guess]));
-       
-       socket.on('receive_artillery_move', (move) => setIncomingArtilleryMove(move));
-       socket.on('partner_game_update', (status) => setPartnerGameSession(status));
-       socket.on('turn_update', (seat) => setActiveTurnSeat(seat));
-       socket.on('partner_disconnected', () => setHasPartnerLeft(true));
-       
-    ========================================================= */
+    socket.on('receive_guess', (guess: GameGuess) => {
+      setGameGuesses(prev => [...prev, guess]);
+    });
+    
+    socket.on('receive_artillery_move', (move: ArtilleryMove) => {
+      setIncomingArtilleryMove(move);
+    });
 
+    socket.on('partner_game_update', (status) => {
+      setPartnerGameSession(status);
+    });
+
+    socket.on('turn_update', (seat: string) => {
+      setActiveTurnSeat(seat);
+    });
+
+    socket.on('partner_disconnected', () => {
+      setHasPartnerLeft(true);
+    });
+    
     return () => {
-      clearTimeout(welcomeTimeout);
-      clearTimeout(guessTimeout);
-      // socket.off(...) listeners go here tomorrow
+      socket.off('receive_message');
+      socket.off('receive_draw');
+      socket.off('receive_guess');
+      socket.off('receive_artillery_move');
+      socket.off('partner_game_update');
+      socket.off('turn_update');
+      socket.off('partner_disconnected');
     };
-  }, [isMatched, roomName, partnerSeat]);
+  }, [isMatched]);
 
-  // NEW: Sending the request to find a match
+  // Sending the request to find a match
   const sendMatchRequest = useCallback((surveyAnswers: any) => {
     setMatchRequestStatus('pending');
-    
-    // MOCK: Simulate waiting 3.5 seconds, then the partner clicks "Accept"
-    setTimeout(() => {
-      setMatchRequestStatus('accepted');
-    }, 3500);
+    socket.emit('request_match', { seat: mySeat, survey: surveyAnswers });
+  }, [mySeat]);
 
-    // [BACKEND NOTE]: socket.emit('request_match', { seat: mySeat, survey: surveyAnswers });
-  }, []);
-
-  // NEW: Responding to someone else's request
+  // Responding to someone else's request
   const respondToMatchRequest = useCallback((accept: boolean) => {
     setIncomingMatchRequest(null);
-    // [BACKEND NOTE]: socket.emit('respond_to_match', { accept, fromSeat: mySeat, toSeat: partnerSeat });
+    socket.emit('respond_to_match', { accept, fromSeat: mySeat, toSeat: partnerSeat });
   }, [mySeat, partnerSeat]);
 
   // DEV TOOL: Trigger the incoming modal locally
@@ -132,41 +140,71 @@ export const useSeatSyncSocket = (roomName: string, isMatched: boolean, mySeat: 
     setIncomingMatchRequest({ fromSeat: partnerSeat });
   }, [partnerSeat]);
 
+  // LIVE TRANSMISSION EMITTERS
   const sendMessage = useCallback((text: string) => {
     const newMessage: ChatMessage = {
       id: Math.random().toString(),
-      sender: `You (${mySeat})`,
+      sender: `Seat ${mySeat}`, // Cleaned up for presentation view
       text,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
     setMessages(prev => [...prev, newMessage]);
-    // [BACKEND NOTE]: socket.emit('send_message', { room: roomName, message: newMessage });
+    socket.emit('send_message', { room: roomName, message: newMessage });
   }, [mySeat, roomName]);
 
   const sendDrawStroke = useCallback((point: DrawPoint) => {
-    // [BACKEND NOTE]: socket.emit('draw_stroke', { room: roomName, point });
+    socket.emit('draw_stroke', { room: roomName, point });
   }, [roomName]);
 
   const sendGameGuess = useCallback((text: string) => {
     const newGuess: GameGuess = {
       id: Math.random().toString(),
-      sender: `You`,
+      sender: `Seat ${mySeat}`,
       text
     };
     setGameGuesses(prev => [...prev, newGuess]);
-    // [BACKEND NOTE]: socket.emit('send_guess', { room: roomName, guess: newGuess });
-  }, [roomName]);
+    socket.emit('send_guess', { room: roomName, guess: newGuess });
+  }, [roomName, mySeat]);
 
   const sendArtilleryMove = useCallback((move: ArtilleryMove) => {
-    // [BACKEND NOTE]: socket.emit('send_artillery_move', { room: roomName, move });
+    socket.emit('send_artillery_move', { room: roomName, move });
   }, [roomName]);
 
+  // Pass the turn to the other player
+  const passTurn = useCallback(() => {
+    const nextSeat = mySeat === '12A' ? '14B' : '12A';
+    socket.emit('switch_turn', { nextSeat });
+  }, [mySeat]);
+
   const sendGameSessionUpdate = useCallback((game: 'draw' | 'artillery', action: 'start' | 'quit') => {
-    // [BACKEND NOTE]: socket.emit('game_session_update', { room: roomName, game, action, seat: mySeat });
+    socket.emit('game_session_update', { room: roomName, game, action, seat: mySeat });
   }, [roomName, mySeat]);
 
   const simulatePartnerDisconnect = useCallback(() => {
     setHasPartnerLeft(true);
+  }, []);
+
+  const terminateConnection = useCallback(() => {
+    socket.disconnect(); // Triggers the backend partner_disconnected event!
+    
+    // Clear out the session data
+    setMatchRequestStatus('idle');
+    setIncomingMatchRequest(null);
+    setMessages([]);
+    setGameGuesses([]);
+    
+    // Reconnect half a second later so they aren't permanently offline
+    setTimeout(() => {
+      socket.connect();
+      socket.emit('register_seat', mySeat);
+    }, 500);
+  }, [mySeat]);
+
+  // NEW: Wipes the game memory when a new game starts
+  const resetGameState = useCallback(() => {
+    setIncomingDrawPoint(null);
+    setGameGuesses([]);
+    setIncomingArtilleryMove(null);
   }, []);
 
   return {
@@ -178,16 +216,19 @@ export const useSeatSyncSocket = (roomName: string, isMatched: boolean, mySeat: 
     incomingArtilleryMove,  
     partnerGameSession,     
     activeTurnSeat,         
-    matchRequestStatus,       // NEW
-    incomingMatchRequest,     // NEW
-    sendMatchRequest,         // NEW
-    respondToMatchRequest,    // NEW
-    simulateIncomingRequest,  // NEW
+    matchRequestStatus,       
+    incomingMatchRequest,     
+    sendMatchRequest,         
+    respondToMatchRequest,    
+    simulateIncomingRequest,  
     simulatePartnerDisconnect,
     sendMessage,
     sendDrawStroke,
     sendGameGuess,
-    sendArtilleryMove,      
-    sendGameSessionUpdate   
+    sendArtilleryMove, 
+    passTurn,      
+    sendGameSessionUpdate,
+    terminateConnection,
+    resetGameState // <--- Exported here!
   };
 };

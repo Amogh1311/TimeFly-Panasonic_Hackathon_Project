@@ -64,16 +64,17 @@ export const App: React.FC = () => {
   const [toastType, setToastType] = useState<'message' | 'alert'>('message');
   const [hasUnreadIndicator, setHasUnreadIndicator] = useState(false);
 
-  // UPDATED: Destructuring the new Matchmaking functions
+  // UPDATED: Added resetGameState here
   const { 
     messages, incomingDrawPoint, sendMessage, sendDrawStroke, hasPartnerLeft, simulatePartnerDisconnect,
     gameGuesses, sendGameGuess, activeTurnSeat,
-    matchRequestStatus, incomingMatchRequest, sendMatchRequest, respondToMatchRequest, simulateIncomingRequest
+    incomingArtilleryMove, sendArtilleryMove, passTurn, 
+    matchRequestStatus, incomingMatchRequest, sendMatchRequest, respondToMatchRequest, simulateIncomingRequest,
+    partnerGameSession, sendGameSessionUpdate, terminateConnection, resetGameState
   } = useSeatSyncSocket('room_12A_14B', isSeatSyncMatched, currentSeat);
 
   const isMyTurn = activeTurnSeat === currentSeat;
 
-  // Auto-connect when our outbound request is accepted
   useEffect(() => {
     if (matchRequestStatus === 'accepted' && !isSeatSyncMatched) {
       setIsSeatSyncMatched(true);
@@ -109,6 +110,25 @@ export const App: React.FC = () => {
     }
   }, [activeTab]);
 
+  useEffect(() => {
+    if (partnerGameSession) {
+      // 1. Automatically start or close the game on this screen
+      setGameStates(prev => ({ ...prev, [partnerGameSession.game]: partnerGameSession.action === 'start' }));
+      
+      // NEW: Wipe memory if partner starts!
+      if (partnerGameSession.action === 'start') {
+        resetGameState(); 
+      }
+
+      // 2. If they quit, show the red alert notification
+      if (partnerGameSession.action === 'quit') {
+        setToastNotification(`Seat ${partnerSeat} quit the ${partnerGameSession.game === 'draw' ? 'Canvas' : 'Artillery'} game.`);
+        setToastType('alert');
+        setHasUnreadIndicator(true);
+      }
+    }
+  }, [partnerGameSession, partnerSeat, resetGameState]);
+
   const forceTriggerAI = () => {
     setAiData(MOCK_AI_RESPONSE);
     setIsModalOpen(true);
@@ -122,19 +142,20 @@ export const App: React.FC = () => {
 
   const handleStartGame = (game: 'draw' | 'artillery') => {
     setGameStates(prev => ({ ...prev, [game]: true }));
+    sendGameSessionUpdate(game, 'start'); 
+    resetGameState(); // NEW: Wipes memory if you start!
   };
 
   const handleQuitGame = (game: 'draw' | 'artillery') => {
     setGameStates(prev => ({ ...prev, [game]: false }));
-    setToastNotification(`Seat ${currentSeat} quit the ${game === 'draw' ? 'Canvas' : 'Artillery'} game.`);
+    sendGameSessionUpdate(game, 'quit'); 
+    setToastNotification(`You quit the ${game === 'draw' ? 'Canvas' : 'Artillery'} game.`);
     setToastType('alert');
-    setHasUnreadIndicator(true);
   };
 
   return (
     <div className={styles.appContainer}>
       
-      {/* NEW: Incoming Match Request Modal Overlay */}
       {incomingMatchRequest && (
         <div style={{
           position: 'fixed', inset: 0, background: 'rgba(5, 8, 15, 0.85)', backdropFilter: 'blur(15px)',
@@ -152,13 +173,37 @@ export const App: React.FC = () => {
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
               <button 
                 onClick={() => respondToMatchRequest(false)} 
-                style={{ padding: '0.8rem 1.5rem', background: 'transparent', border: '1px solid #ff4444', color: '#ff4444', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', flex: 1 }}
+                style={{ 
+                  padding: '0.8rem 1.5rem', background: 'transparent', border: '1px solid #ff4444', 
+                  color: '#ff4444', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', flex: 1,
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 68, 68, 0.1)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
               >
                 Decline
               </button>
               <button 
                 onClick={() => { respondToMatchRequest(true); setIsSeatSyncMatched(true); setActiveTab('social'); }} 
-                style={{ padding: '0.8rem 1.5rem', background: 'var(--accent-cyan)', border: 'none', color: 'black', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 0 15px rgba(0,210,255,0.4)', flex: 1 }}
+                style={{ 
+                  padding: '0.8rem 1.5rem', background: 'var(--accent-cyan)', border: 'none', color: 'black', 
+                  borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', flex: 1,
+                  boxShadow: '0 0 15px rgba(0,210,255,0.4)', transition: 'all 0.2s ease' 
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.boxShadow = '0 0 25px rgba(0,210,255,0.8)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.boxShadow = '0 0 15px rgba(0,210,255,0.4)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
               >
                 Accept Link
               </button>
@@ -281,13 +326,14 @@ export const App: React.FC = () => {
 
           <div style={{ display: activeTab === 'social' ? 'flex' : 'none', gap: '1.5rem', height: '100%' }}>
             <div style={{ flex: 1, minWidth: '350px' }}>
-              {/* UPDATED: We now pass the MatchStatus and the sendMatchRequest function to the Survey */}
               <MatchSurvey 
+                isMatched={isSeatSyncMatched}
                 matchRequestStatus={matchRequestStatus}
                 onSendMatchRequest={sendMatchRequest}
                 onMatchReady={() => setIsSeatSyncMatched(true)} 
                 onEditStart={() => setIsSeatSyncMatched(false)} 
                 onDisconnect={() => {
+                  terminateConnection();
                   setIsSeatSyncMatched(false);
                   setToastNotification(null);
                   setHasUnreadIndicator(false);
@@ -348,11 +394,17 @@ export const App: React.FC = () => {
                           guesses={gameGuesses}
                           onSendGuess={sendGameGuess}
                           isMyTurn={isMyTurn}
+                          onPassTurn={passTurn} // NEW: Passing down the pass turn function
+                          isActive={gameStates.draw} // NEW: Passing down active state
                         />
                       ) : (
                         <ArtilleryGame 
                           playerSeat={currentSeat} 
                           isMyTurn={isMyTurn}
+                          incomingMove={incomingArtilleryMove}
+                          onSendMove={sendArtilleryMove}
+                          onTurnEnd={passTurn}
+                          isActive={gameStates.artillery} // NEW: Passing down active state
                         />
                       )}
                     </div>
@@ -403,22 +455,35 @@ export const App: React.FC = () => {
 
         <aside className={styles.sidebarSection}>
           <FlightSimulatorControls telemetry={telemetry} setTelemetry={setTelemetry} />
-          <button style={{ marginTop: '1.5rem', padding: '1rem', background: 'var(--accent-cyan)', color: '#000', fontWeight: 'bold', border: 'none', borderRadius: '8px', cursor: 'pointer', width: '100%' }} onClick={forceTriggerAI}>Best Recommendations</button>
           
-          {/* NEW DEV TOOLS */}
-          <div style={{ marginTop: '1rem', border: '1px dashed rgba(255,255,255,0.2)', padding: '1rem', borderRadius: '8px' }}>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textAlign: 'center', margin: '0 0 0.5rem 0' }}>Socket Dev Tools</p>
-            {!isSeatSyncMatched && (
-              <button style={{ padding: '0.8rem', background: 'rgba(0, 210, 255, 0.1)', color: 'var(--accent-cyan)', border: '1px solid var(--accent-cyan)', borderRadius: '8px', cursor: 'pointer', width: '100%', fontWeight: 'bold', marginBottom: '0.5rem' }} onClick={simulateIncomingRequest}>
-                📥 Simulate Incoming Request
-              </button>
-            )}
-            {isSeatSyncMatched && !hasPartnerLeft && (
-              <button style={{ padding: '0.8rem', background: 'rgba(255,0,0,0.1)', color: '#ff4444', border: '1px solid #ff4444', borderRadius: '8px', cursor: 'pointer', width: '100%', fontWeight: 'bold' }} onClick={simulatePartnerDisconnect}>
-                ⚠️ Simulate Partner Disconnect
-              </button>
-            )}
-          </div>
+          <button 
+            style={{ 
+              marginTop: '1.5rem', 
+              padding: '1rem', 
+              background: 'var(--accent-cyan)', 
+              color: '#000', 
+              fontWeight: 'bold', 
+              border: 'none', 
+              borderRadius: '8px', 
+              cursor: 'pointer', 
+              width: '100%',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 4px 15px rgba(0, 210, 255, 0.2)' 
+            }} 
+            onClick={forceTriggerAI}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 210, 255, 0.4)';
+              e.currentTarget.style.filter = 'brightness(1.1)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 210, 255, 0.2)';
+              e.currentTarget.style.filter = 'brightness(1)';
+            }}
+          >
+            Best Recommendations
+          </button>
         </aside>
       </main>
 

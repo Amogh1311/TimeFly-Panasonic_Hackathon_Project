@@ -9,12 +9,16 @@ interface DrawingBoardProps {
   onDrawStroke?: (point: DrawPoint) => void;
   guesses?: GameGuess[];
   onSendGuess?: (text: string) => void;
-  isMyTurn: boolean; // NEW: Receives the turn state from App.tsx
+  isMyTurn: boolean;
+  onPassTurn?: () => void; // NEW: Added to pass the turn
+  isActive: boolean;       // NEW: Added to track if the game just started
 }
 
 const NEON_COLORS = ['#00d2ff', '#ff007f', '#00ff66', '#ffea00', '#ffffff'];
 
-export const DrawingBoard: React.FC<DrawingBoardProps> = ({ incomingStroke, onDrawStroke, guesses = [], onSendGuess, isMyTurn }) => {
+export const DrawingBoard: React.FC<DrawingBoardProps> = ({ 
+  incomingStroke, onDrawStroke, guesses = [], onSendGuess, isMyTurn, onPassTurn, isActive 
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const guessesEndRef = useRef<HTMLDivElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -23,12 +27,19 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({ incomingStroke, onDr
   const lastPos = useRef({ x: 0, y: 0 });
 
   const clearBoard = () => {
-    // Only allow clearing if it's your turn
     if (!isMyTurn) return; 
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
     if (canvas && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
   };
+
+  // NEW: Automatically clear canvas when a new game starts
+  useEffect(() => {
+    if (isActive && canvasRef.current) {
+      const ctx = canvasRef.current.getContext('2d');
+      if (ctx) ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    }
+  }, [isActive]);
 
   useEffect(() => {
     if (!incomingStroke) return;
@@ -90,7 +101,6 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({ incomingStroke, onDr
           </span>
         </div>
         
-        {/* NEW: Disable and dim tools when waiting */}
         <div className={styles.tools} style={{ opacity: isMyTurn ? 1 : 0.4, pointerEvents: isMyTurn ? 'auto' : 'none' }}>
           <div className={styles.palette}>
             {NEON_COLORS.map(c => (
@@ -110,6 +120,16 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({ incomingStroke, onDr
             </svg>
             Clear
           </button>
+          
+          {/* NEW: Pass Turn Button */}
+          <button 
+            className={styles.clearBtn} 
+            onClick={onPassTurn} 
+            disabled={!isMyTurn} 
+            style={{ marginLeft: '10px', background: 'rgba(0, 210, 255, 0.2)', color: 'var(--accent-cyan)' }}
+          >
+            ⏭ Pass Turn
+          </button>
         </div>
       </div>
 
@@ -119,7 +139,7 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({ incomingStroke, onDr
           className={styles.canvasElement}
           width={600}
           height={200}
-          style={{ pointerEvents: isMyTurn ? 'auto' : 'none', cursor: isMyTurn ? 'crosshair' : 'default' }} // NEW: Lock canvas
+          style={{ pointerEvents: isMyTurn ? 'auto' : 'none', cursor: isMyTurn ? 'crosshair' : 'default' }} 
           onMouseDown={(e) => {
             if (!isMyTurn) return;
             setIsDrawing(true);
@@ -148,7 +168,6 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({ incomingStroke, onDr
         </div>
         
         <form onSubmit={handleGuessSubmit} className={styles.guessForm}>
-          {/* NEW: Dynamic placeholder and disabled state based on turn */}
           <input 
             type="text" 
             placeholder={isMyTurn ? "You are drawing! Your partner is guessing..." : "Type your guess here..."} 
