@@ -6,19 +6,23 @@ export interface ArtilleryGameProps {
   isMyTurn: boolean;
   incomingMove?: { angle: number; power: number; nextObstacle: number } | null;
   onSendMove?: (move: { angle: number; power: number; nextObstacle: number }) => void;
+  incomingPosition?: { seat: string; x: number } | null; // NEW: Movement Prop
+  onSendPosition?: (position: { seat: string; x: number }) => void; // NEW: Movement Prop
   onTurnEnd?: () => void;
   isActive: boolean; 
-  onQuit?: () => void; // NEW: Added onQuit prop
+  onQuit?: () => void;
 }
 
 export const ArtilleryGame: React.FC<ArtilleryGameProps> = ({ 
-  playerSeat, isMyTurn, incomingMove, onSendMove, onTurnEnd, isActive, onQuit 
+  playerSeat, isMyTurn, incomingMove, onSendMove, incomingPosition, onSendPosition, onTurnEnd, isActive, onQuit 
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
   // Game State
   const [p1Health, setP1Health] = useState(10);
   const [p2Health, setP2Health] = useState(10);
+  const [p1X, setP1X] = useState(50); // NEW: P1 Position
+  const [p2X, setP2X] = useState(550); // NEW: P2 Position
   const [angle, setAngle] = useState(45);
   const [power, setPower] = useState(60);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -27,11 +31,21 @@ export const ArtilleryGame: React.FC<ArtilleryGameProps> = ({
   // Dynamic Obstacle (Randomized height between 50 and 150)
   const [obstacleHeight, setObstacleHeight] = useState(100);
 
+  // Listen for opponent's movement
+  useEffect(() => {
+    if (incomingPosition) {
+      if (incomingPosition.seat === '12A') setP1X(incomingPosition.x);
+      if (incomingPosition.seat === '14B') setP2X(incomingPosition.x);
+    }
+  }, [incomingPosition]);
+
   // Reset game state when a new session starts
   useEffect(() => {
     if (isActive) {
       setP1Health(10);
       setP2Health(10);
+      setP1X(50);
+      setP2X(550);
       setAngle(45);
       setPower(60);
       setStatusMsg("");
@@ -69,12 +83,12 @@ export const ArtilleryGame: React.FC<ArtilleryGameProps> = ({
     ctx.fillStyle = '#00d2ff';
     ctx.shadowColor = '#00d2ff';
     ctx.shadowBlur = 15;
-    ctx.fillRect(30, floorY - 30, 40, 30);
+    ctx.fillRect(p1X - 20, floorY - 30, 40, 30); // Dynamic X
 
     // Draw P2 Base (Pink - 14B)
     ctx.fillStyle = '#ff007f';
     ctx.shadowColor = '#ff007f';
-    ctx.fillRect(width - 70, floorY - 30, 40, 30);
+    ctx.fillRect(p2X - 20, floorY - 30, 40, 30); // Dynamic X
 
     // Draw Mountain Obstacle
     ctx.fillStyle = '#2a3143';
@@ -99,7 +113,7 @@ export const ArtilleryGame: React.FC<ArtilleryGameProps> = ({
   // Initial draw
   useEffect(() => {
     drawScene();
-  }, [obstacleHeight, p1Health, p2Health]);
+  }, [obstacleHeight, p1Health, p2Health, p1X, p2X]);
 
   // The Master Physics Engine
   const executeShot = (shotAngle: number, shotPower: number, isOpponent: boolean, nextObsHeight: number) => {
@@ -112,8 +126,8 @@ export const ArtilleryGame: React.FC<ArtilleryGameProps> = ({
     const amIP1 = playerSeat === '12A';
     const shooterIsP1 = isOpponent ? !amIP1 : amIP1;
 
-    // Physics variables (P1 shoots from left, P2 shoots from right)
-    let x = shooterIsP1 ? 50 : width - 50; 
+    // Physics variables (Start from dynamic X positions)
+    let x = shooterIsP1 ? p1X : p2X; 
     let y = floorY - 30; 
     
     // P1 shoots right (positive X), P2 shoots left (negative X)
@@ -131,8 +145,10 @@ export const ArtilleryGame: React.FC<ArtilleryGameProps> = ({
 
       let hitFloor = y >= floorY;
       let hitObstacle = x > (width / 2 - 40) && x < (width / 2 + 40) && y > (floorY - obstacleHeight);
-      let hitP1 = x > 30 && x < 70 && y > (floorY - 30);
-      let hitP2 = x > width - 70 && x < width - 30 && y > (floorY - 30);
+      
+      // Dynamic Hitboxes
+      let hitP1 = x > (p1X - 20) && x < (p1X + 20) && y > (floorY - 30);
+      let hitP2 = x > (p2X - 20) && x < (p2X + 20) && y > (floorY - 30);
 
       if (hitP1 || hitP2) {
         if (hitP1) setP1Health(prev => Math.max(0, prev - 1));
@@ -182,6 +198,33 @@ export const ArtilleryGame: React.FC<ArtilleryGameProps> = ({
     executeShot(angle, power, false, nextObs);
   };
 
+  // Local Movement Action
+  const handleMove = (direction: 'left' | 'right') => {
+    if (isAnimating || !isMyTurn) return;
+
+    const step = 20; // Move 20px per click
+    const amIP1 = playerSeat === '12A';
+    let newX = amIP1 ? p1X : p2X;
+
+    if (direction === 'left') newX -= step;
+    if (direction === 'right') newX += step;
+
+    // Prevent crossing the mountain or falling off the map
+    if (amIP1) {
+      if (newX < 20) newX = 20;
+      if (newX > width / 2 - 60) newX = width / 2 - 60;
+      setP1X(newX);
+    } else {
+      if (newX < width / 2 + 60) newX = width / 2 + 60;
+      if (newX > width - 20) newX = width - 20;
+      setP2X(newX);
+    }
+
+    if (onSendPosition) {
+      onSendPosition({ seat: playerSeat, x: newX });
+    }
+  };
+
   const endShot = (nextObsHeight: number, wasMyShot: boolean) => {
     setTimeout(() => {
       setObstacleHeight(nextObsHeight);
@@ -193,6 +236,8 @@ export const ArtilleryGame: React.FC<ArtilleryGameProps> = ({
       }
     }, 1500);
   };
+
+  const themeColor = playerSeat === '12A' ? 'var(--accent-cyan)' : '#ff007f';
 
   return (
     <div className={styles.gameWrapper}>
@@ -230,43 +275,120 @@ export const ArtilleryGame: React.FC<ArtilleryGameProps> = ({
       </div>
 
       <div className={styles.controls}>
+        
+        {/* NEW MOVEMENT CONTROLS */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '1rem' }}>
+          <button 
+            onClick={() => handleMove('left')} 
+            disabled={isAnimating || !isMyTurn}
+            style={{
+              background: 'transparent', color: themeColor, border: `1px solid ${themeColor}`,
+              padding: '0.4rem 1rem', borderRadius: '8px', cursor: (isAnimating || !isMyTurn) ? 'not-allowed' : 'pointer',
+              fontWeight: 'bold', opacity: (isAnimating || !isMyTurn) ? 0.4 : 1, transition: 'all 0.2s'
+            }}
+            onMouseOver={(e) => { 
+              if (!isAnimating && isMyTurn) {
+                e.currentTarget.style.background = playerSeat === '12A' ? 'rgba(0, 210, 255, 0.15)' : 'rgba(255, 0, 127, 0.15)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+              }
+            }}
+            onMouseOut={(e) => { 
+              if (!isAnimating && isMyTurn) {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }
+            }}
+          >
+            ⬅️ Drive
+          </button>
+          <button 
+            onClick={() => handleMove('right')} 
+            disabled={isAnimating || !isMyTurn}
+            style={{
+              background: 'transparent', color: themeColor, border: `1px solid ${themeColor}`,
+              padding: '0.4rem 1rem', borderRadius: '8px', cursor: (isAnimating || !isMyTurn) ? 'not-allowed' : 'pointer',
+              fontWeight: 'bold', opacity: (isAnimating || !isMyTurn) ? 0.4 : 1, transition: 'all 0.2s'
+            }}
+            onMouseOver={(e) => { 
+              if (!isAnimating && isMyTurn) {
+                e.currentTarget.style.background = playerSeat === '12A' ? 'rgba(0, 210, 255, 0.15)' : 'rgba(255, 0, 127, 0.15)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+              }
+            }}
+            onMouseOut={(e) => { 
+              if (!isAnimating && isMyTurn) {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }
+            }}
+          >
+            Drive ➡️
+          </button>
+        </div>
+
         <div className={styles.sliderGroup}>
-          <label>Angle: <span>{angle}°</span></label>
+          <label>Angle: <span style={{ color: themeColor }}>{angle}°</span></label>
           <input 
             type="range" min="0" max="90" value={angle} 
             onChange={(e) => setAngle(Number(e.target.value))}
             className={styles.slider} disabled={isAnimating || !isMyTurn}
+            style={{ accentColor: themeColor }} 
           />
         </div>
         <div className={styles.sliderGroup}>
-          <label>Power: <span>{power}%</span></label>
+          <label>Power: <span style={{ color: themeColor }}>{power}%</span></label>
           <input 
             type="range" min="10" max="100" value={power} 
             onChange={(e) => setPower(Number(e.target.value))}
             className={styles.slider} disabled={isAnimating || !isMyTurn}
+            style={{ accentColor: themeColor }} 
           />
         </div>
         <button 
           className={styles.fireBtn} 
           onClick={handleFire} 
           disabled={isAnimating || !isMyTurn}
+          style={{
+            background: (isAnimating || !isMyTurn) ? 'transparent' : themeColor,
+            color: (isAnimating || !isMyTurn) ? 'var(--text-secondary)' : '#000',
+            border: (isAnimating || !isMyTurn) ? '1px solid var(--text-secondary)' : 'none',
+            boxShadow: (isAnimating || !isMyTurn) ? 'none' : `0 0 15px ${themeColor}`,
+            transition: 'all 0.2s ease'
+          }}
+          onMouseOver={(e) => {
+            if (!isAnimating && isMyTurn) {
+              e.currentTarget.style.transform = 'scale(1.05)';
+              e.currentTarget.style.boxShadow = `0 0 25px ${themeColor}`;
+            }
+          }}
+          onMouseOut={(e) => {
+            if (!isAnimating && isMyTurn) {
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.boxShadow = `0 0 15px ${themeColor}`;
+            }
+          }}
         >
-          {isMyTurn ? "FIRE" : "WAITING..."}
+          {isMyTurn ? "🔥 FIRE" : "WAITING..."}
         </button>
       </div>
 
-      {/* NEW: Quit Game Button nicely placed in the natural flow below the controls */}
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
         <button 
           onClick={onQuit} 
           style={{ 
-            background: 'rgba(255, 68, 68)', color: '#ffffff', 
-            border: '1px solid #ff4444', borderRadius: '8px', 
-            padding: '0.4rem 1.5rem', cursor: 'pointer', fontWeight: 'bold', 
-            transition: 'all 0.2s', width: '100%', maxWidth: '200px'
+            background: '#ff4444', color: '#ffffff', border: 'none', 
+            borderRadius: '8px', padding: '0.5rem 1.5rem', cursor: 'pointer', 
+            fontWeight: 'bold', transition: 'all 0.2s', width: '100%', maxWidth: '200px',
+            boxShadow: '0 4px 15px rgba(255, 68, 68, 0.3)'
           }}
-          onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(255, 10, 10, 0.3)'; }}
-          onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(255, 10, 10, 0.15)'; }}
+          onMouseOver={(e) => { 
+            e.currentTarget.style.background = '#e60000'; 
+            e.currentTarget.style.transform = 'translateY(-2px)';
+          }}
+          onMouseOut={(e) => { 
+            e.currentTarget.style.background = '#ff4444'; 
+            e.currentTarget.style.transform = 'translateY(0)';
+          }}
         >
           🛑 Quit Game
         </button>

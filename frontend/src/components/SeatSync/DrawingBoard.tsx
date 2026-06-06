@@ -52,8 +52,18 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({
     const ctx = canvas?.getContext('2d');
     if (ctx) {
       ctx.beginPath();
-      ctx.strokeStyle = incomingStroke.color;
-      ctx.lineWidth = 3;
+      
+      // NEW: Check for the ERASER flag
+      if (incomingStroke.color === 'ERASER') {
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.lineWidth = 20; // Make the eraser thicker!
+        ctx.strokeStyle = 'rgba(0,0,0,1)';
+      } else {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = incomingStroke.color;
+      }
+
       ctx.lineJoin = 'round';
       ctx.lineCap = 'round';
       ctx.moveTo(incomingStroke.prevX, incomingStroke.prevY);
@@ -77,8 +87,18 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({
     const currentY = e.clientY - rect.top;
 
     ctx.beginPath();
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 3;
+    
+    // NEW: Check for the ERASER flag
+    if (color === 'ERASER') {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.lineWidth = 20; // Make the eraser thicker!
+      ctx.strokeStyle = 'rgba(0,0,0,1)';
+    } else {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = color;
+    }
+
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
     ctx.moveTo(lastPos.current.x, lastPos.current.y);
@@ -125,6 +145,19 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({
                 disabled={!isMyTurn}
               />
             ))}
+            
+            {/* NEW ERASER BUTTON */}
+            <button 
+              onClick={() => setColor('ERASER')} 
+              disabled={!isMyTurn}
+              style={{
+                marginLeft: '0.5rem', padding: '0.2rem 0.6rem', borderRadius: '8px', cursor: !isMyTurn ? 'not-allowed' : 'pointer',
+                background: color === 'ERASER' ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+                color: 'white', border: color === 'ERASER' ? '1px solid white' : '1px solid rgba(255,255,255,0.2)'
+              }}
+            >
+              🧽
+            </button>
           </div>
           <button className={styles.clearBtn} onClick={clearBoard} disabled={!isMyTurn}>
              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

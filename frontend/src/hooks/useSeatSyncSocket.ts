@@ -42,6 +42,7 @@ export const useSeatSyncSocket = (roomName: string, isMatched: boolean, mySeat: 
   const [gameGuesses, setGameGuesses] = useState<GameGuess[]>([]);
   const [activeTurnSeat, setActiveTurnSeat] = useState<string>(mySeat);
   const [incomingArtilleryMove, setIncomingArtilleryMove] = useState<ArtilleryMove | null>(null);
+  const [incomingArtilleryPosition, setIncomingArtilleryPosition] = useState<{seat: string, x: number} | null>(null);
   const [partnerGameSession, setPartnerGameSession] = useState<{ game: 'draw' | 'artillery', action: 'start' | 'quit' } | null>(null);
 
   // Matchmaking Handshake States
@@ -107,6 +108,10 @@ export const useSeatSyncSocket = (roomName: string, isMatched: boolean, mySeat: 
       setIncomingArtilleryMove(move);
     });
 
+    socket.on('receive_artillery_position', (pos: {seat: string, x: number}) => {
+      setIncomingArtilleryPosition(pos);
+    });
+
     socket.on('partner_game_update', (status) => {
       setPartnerGameSession(status);
     });
@@ -126,6 +131,7 @@ export const useSeatSyncSocket = (roomName: string, isMatched: boolean, mySeat: 
       socket.off('receive_clear_board');
       socket.off('receive_guess');
       socket.off('receive_artillery_move');
+      socket.off('receive_artillery_position');
       socket.off('partner_game_update');
       socket.off('turn_update');
       socket.off('partner_disconnected');
@@ -195,6 +201,10 @@ export const useSeatSyncSocket = (roomName: string, isMatched: boolean, mySeat: 
     socket.emit('send_artillery_move', { room: roomName, move });
   }, [roomName]);
 
+  const sendArtilleryPosition = useCallback((position: {seat: string, x: number}) => {
+    socket.emit('send_artillery_position', { room: roomName, position });
+  }, [roomName]);
+
   // Pass the turn to the other player
   const passTurn = useCallback(() => {
     const nextSeat = mySeat === '12A' ? '14B' : '12A';
@@ -230,6 +240,7 @@ export const useSeatSyncSocket = (roomName: string, isMatched: boolean, mySeat: 
     setIncomingDrawPoint(null);
     setGameGuesses([]);
     setIncomingArtilleryMove(null);
+    setIncomingArtilleryPosition(null);
   }, []);
 
   return {
@@ -252,6 +263,8 @@ export const useSeatSyncSocket = (roomName: string, isMatched: boolean, mySeat: 
     sendDrawStroke,
     sendGameGuess,
     sendArtilleryMove, 
+    incomingArtilleryPosition,
+    sendArtilleryPosition,
     passTurn,      
     sendGameSessionUpdate,
     terminateConnection,

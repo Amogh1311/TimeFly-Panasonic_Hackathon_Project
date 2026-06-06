@@ -140,6 +140,13 @@ async def handle_artillery_move(sid, data):
     partner_sid = get_partner_sid(sid)
     if partner_sid:
         await sio.emit('receive_artillery_move', data.get('move'), to=partner_sid)
+
+@sio.on('send_artillery_position')
+async def handle_artillery_position(sid, data):
+    partner_sid = get_partner_sid(sid)
+    if partner_sid:
+        # Pass the new position (x coordinate) to the partner's screen
+        await sio.emit('receive_artillery_position', data.get('position'), to=partner_sid)
  
 @sio.on('game_session_update')
 async def handle_session_update(sid, data):

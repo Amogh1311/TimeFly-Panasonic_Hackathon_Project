@@ -53,6 +53,7 @@ export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'media' | 'social'>('media');
   const [activeGame, setActiveGame] = useState<'draw' | 'artillery'>('draw');
   const [gameStates, setGameStates] = useState({ draw: false, artillery: false });
+  const [quitMessages, setQuitMessages] = useState<{draw: string | null, artillery: string | null}>({ draw: null, artillery: null });
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [aiData, setAiData] = useState<AiPayload | null>(null);
@@ -70,7 +71,7 @@ export const App: React.FC = () => {
     incomingArtilleryMove, sendArtilleryMove, passTurn, 
     matchRequestStatus, incomingMatchRequest, sendMatchRequest, respondToMatchRequest,
     partnerGameSession, sendGameSessionUpdate, terminateConnection, resetGameState, incomingClear, sendClearBoard,
-    cancelMatchRequest
+    cancelMatchRequest, incomingArtilleryPosition, sendArtilleryPosition
   } = useSeatSyncSocket('room_12A_14B', isSeatSyncMatched, currentSeat);
 
   const isMyTurn = activeTurnSeat === currentSeat;
@@ -116,12 +117,14 @@ export const App: React.FC = () => {
       
       if (partnerGameSession.action === 'start') {
         resetGameState(); 
+        setQuitMessages(prev => ({ ...prev, [partnerGameSession.game]: null })); // <--- CLEAR MESSAGE
       }
 
       if (partnerGameSession.action === 'quit') {
         setToastNotification(`Seat ${partnerSeat} quit the ${partnerGameSession.game === 'draw' ? 'Canvas' : 'Artillery'} game.`);
         setToastType('alert');
         setHasUnreadIndicator(true);
+        setQuitMessages(prev => ({ ...prev, [partnerGameSession.game]: `Seat ${partnerSeat} quit the game.` })); // <--- SET MESSAGE
       }
     }
   }, [partnerGameSession, partnerSeat, resetGameState]);
@@ -148,6 +151,7 @@ export const App: React.FC = () => {
     sendGameSessionUpdate(game, 'quit'); 
     setToastNotification(`You quit the ${game === 'draw' ? 'Canvas' : 'Artillery'} game.`);
     setToastType('alert');
+    setQuitMessages(prev => ({ ...prev, [game]: null }));
   };
 
   return (
@@ -361,6 +365,8 @@ export const App: React.FC = () => {
                         padding: '0.4rem 1rem', borderRadius: '8px', cursor: 'pointer', 
                         fontWeight: 'bold', transition: 'all 0.2s' 
                       }}
+                      onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+                      onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
                     >
                       🖌️ Canvas Guessing
                     </button>
@@ -372,6 +378,8 @@ export const App: React.FC = () => {
                         padding: '0.4rem 1rem', borderRadius: '8px', cursor: 'pointer', 
                         fontWeight: 'bold', transition: 'all 0.2s' 
                       }}
+                      onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+                      onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
                     >
                       🎯 Neon Artillery
                     </button>
@@ -404,6 +412,8 @@ export const App: React.FC = () => {
                           isMyTurn={isMyTurn}
                           incomingMove={incomingArtilleryMove}
                           onSendMove={sendArtilleryMove}
+                          incomingPosition={incomingArtilleryPosition}
+                          onSendPosition={sendArtilleryPosition}
                           onTurnEnd={passTurn}
                           isActive={gameStates.artillery} 
                           onQuit={() => handleQuitGame('artillery')} // <--- NEW: Passed down!
@@ -412,7 +422,13 @@ export const App: React.FC = () => {
                     </div>
 
                     {!gameStates[activeGame] && (
-                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10, background: 'rgba(10, 15, 26, 0.4)' }}>
+                      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 10, background: 'rgba(10, 15, 26, 0.75)' }}>
+                        {quitMessages[activeGame] && (
+                          <div style={{ marginBottom: '2rem', textAlign: 'center', animation: 'fadeIn 0.3s' }}>
+                            <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '0.5rem' }}>🛑</span>
+                            <h3 style={{ color: '#ff4444', margin: 0, fontSize: '1.4rem' }}>{quitMessages[activeGame]}</h3>
+                          </div>
+                        )}
                         <button 
                           onClick={() => handleStartGame(activeGame)} 
                           style={{ 
