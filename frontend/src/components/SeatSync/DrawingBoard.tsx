@@ -51,6 +51,7 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
     if (ctx) {
+      ctx.save();
       ctx.beginPath();
       
       // NEW: Check for the ERASER flag
@@ -69,6 +70,7 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({
       ctx.moveTo(incomingStroke.prevX, incomingStroke.prevY);
       ctx.lineTo(incomingStroke.x, incomingStroke.y);
       ctx.stroke();
+      ctx.restore();
     }
   }, [incomingStroke]);
 
@@ -86,6 +88,7 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({
     const currentX = e.clientX - rect.left;
     const currentY = e.clientY - rect.top;
 
+    ctx.save();
     ctx.beginPath();
     
     // NEW: Check for the ERASER flag
@@ -104,6 +107,7 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({
     ctx.moveTo(lastPos.current.x, lastPos.current.y);
     ctx.lineTo(currentX, currentY);
     ctx.stroke();
+    ctx.restore();
 
     if (onDrawStroke) onDrawStroke({ x: currentX, y: currentY, prevX: lastPos.current.x, prevY: lastPos.current.y, color });
     lastPos.current = { x: currentX, y: currentY };
@@ -184,7 +188,10 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({
           className={styles.canvasElement}
           width={600}
           height={200}
-          style={{ pointerEvents: isMyTurn ? 'auto' : 'none', cursor: isMyTurn ? 'crosshair' : 'default' }} 
+          style={{ 
+            pointerEvents: isMyTurn ? 'auto' : 'none', 
+            cursor: isMyTurn ? (color === 'ERASER' ? 'cell' : 'crosshair') : 'default' // <--- UPDATED CURSOR
+          }}
           onMouseDown={(e) => {
             if (!isMyTurn) return;
             setIsDrawing(true);
