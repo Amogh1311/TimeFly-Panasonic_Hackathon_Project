@@ -1,14 +1,55 @@
 import requests
 import random
+import json
+import os
 
 # In-memory cache so we only fetch from the API once when the server boots up.
 MEDIA_CACHE = []
 
+def load_fallback_media():
+    """Load static media from content_database.json as fallback"""
+    base_dir = os.path.dirname(__file__)
+    fallback_path = os.path.join(base_dir, '..', 'data', 'content_database.json')
+    try:
+        with open(fallback_path, 'r') as f:
+            fallback = json.load(f)
+        # Map to expected format - use existing tags or add defaults
+        items = []
+        for item in fallback:
+            media_type = item.get('media_type', 'Music')
+            tags = item.get('tags', [])
+            
+            # If no tags, add defaults based on media type
+            if not tags:
+                if media_type == 'Movie':
+                    tags = ["General Entertainment", "Upbeat Entertainment", "Action", "Focused Work"]
+                elif media_type == 'TV Show':
+                    tags = ["General Entertainment", "Upbeat Entertainment", "Comedy", "Focused Work"]
+                elif media_type == 'Documentary':
+                    tags = ["Focused Work", "General Entertainment", "Educational"]
+                elif media_type == 'Music':
+                    tags = ["Calming Distraction", "Focused Work", "Audio Only", "Relaxing"]
+                elif media_type == 'Audiobook':
+                    tags = ["Audio Only", "Focused Work", "Relaxing"]
+            
+            items.append({
+                "id": item.get("id", str(random.randint(10000, 99999))),
+                "title": item.get("title", "Unknown"),
+                "media_type": media_type,
+                "thumbnail_url": item.get("thumbnail_url", ""),
+                "tags": tags
+            })
+        return items
+    except Exception as e:
+        print(f"⚠️ Failed to load fallback media: {e}")
+        return []
+
 def fetch_itunes_media(search_term, entity_type, display_type, limit=22):
     """
-    Hits the public iTunes API to fetch exactly the number of items requested.
+    Hits the public iTunes API to fetch media items.
+    Returns empty list if API fails, caller will use fallback.
     """
-    url = f"https://itunes.apple.com/search?term={search_term}&entity={entity_type}&limit={limit}"
+    url = f"https://itunes.apple.com/search?term={search_term}&entity={entity_type}&limit={limit}&country=US"
     
     try:
         response = requests.get(url, timeout=5)
@@ -16,19 +57,15 @@ def fetch_itunes_media(search_term, entity_type, display_type, limit=22):
         
         formatted_items = []
         for item in results:
-            # Grab the title depending on the media type
             title = item.get('trackName') or item.get('collectionName')
             if not title:
                 continue
                 
-            # Apple returns tiny 100x100 thumbnails. We hack the URL to get crisp 600x600 images!
             raw_img_url = item.get('artworkUrl100', '')
             high_res_img = raw_img_url.replace('100x100bb', '600x600bb')
             
-            # Create AI Vibe Tags based on the media type so our ML model can filter them
             tags = [item.get('primaryGenreName', 'Entertainment')]
             
-            # Add custom AI tags based on what Apple returns
             if display_type == "Music": 
                 tags.extend(["Calming Distraction", "Focused Work", "Audio Only"])
             elif display_type == "Audiobook":
@@ -53,32 +90,33 @@ def fetch_itunes_media(search_term, entity_type, display_type, limit=22):
 
 def get_all_media():
     """
-    Returns the complete media catalog. Fetches exactly 110 items across 5 categories.
+    Returns the complete media catalog. Uses iTunes API if available, falls back to static data.
     """
     global MEDIA_CACHE
     
-    # If we already have the data, return it instantly to prevent lag
     if MEDIA_CACHE:
         return MEDIA_CACHE
-        
-    print("🌍 Downloading Live Media Catalog (110 Items) from Apple API...")
     
-    # Fetch 22 items per category to reach exactly 110 items
-    movies = fetch_itunes_media("marvel+starwars", "movie", "Movie", 22)
+    print("🌍 Downloading Live Media Catalog from iTunes API...")
+    
+    # Try iTunes API with working entity types
+    movies = fetch_itunes_media("batman", "movie", "Movie", 22)
+    if len(movies) == 0:
+        print("ℹ️ iTunes movie API returned no results, will use fallback")
+    
     music = fetch_itunes_media("lofi+chill", "song", "Music", 22)
     audiobooks = fetch_itunes_media("business+mystery", "audiobook", "Audiobook", 22)
+    tv_shows = fetch_itunes_media("comedy", "tvSeason", "TV Show", 22)
+    documentaries = fetch_itunes_media("nature", "movie", "Documentary", 22)
     
-    # TV Shows use the 'tvSeason' entity in Apple's API
-    tv_shows = fetch_itunes_media("comedy+drama", "tvSeason", "TV Show", 22)
-    
-    # Documentaries are technically movies in Apple's system, but we search specific terms
-    documentaries = fetch_itunes_media("nature+history+space", "movie", "Documentary", 22)
-    
-    # Combine them all together
     MEDIA_CACHE = movies + music + audiobooks + tv_shows + documentaries
     
-    # Shuffle the deck so the dashboard doesn't just show all movies first, then all music, etc.
+    # Always load fallback to ensure all media types are represented
+    # This ensures Movies, TV Shows, Documentaries are available even if iTunes API fails
+    fallback = load_fallback_media()
+    MEDIA_CACHE = MEDIA_CACHE + fallback
+    
     random.shuffle(MEDIA_CACHE)
     
-    print(f"✅ Successfully loaded {len(MEDIA_CACHE)} live media items!")
+    print(f"✅ Successfully loaded {len(MEDIA_CACHE)} media items!")
     return MEDIA_CACHE

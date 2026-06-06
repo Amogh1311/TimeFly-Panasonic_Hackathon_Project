@@ -104,6 +104,12 @@ export const useSeatSyncSocket = ( isMatched: boolean, mySeat: string) => {
       setHasPartnerLeft(true);
       setMatchRequestStatus('idle');
       setPartnerSeat(null); // Wipe partner memory
+
+      setPartnerGameSession(null);
+      setIncomingDrawPoint(null);
+      setGameGuesses([]);
+      setIncomingArtilleryMove(null);
+      setIncomingArtilleryPosition(null);
     });
     
     return () => {
@@ -215,6 +221,13 @@ export const useSeatSyncSocket = ( isMatched: boolean, mySeat: string) => {
     setMessages([]);
     setGameGuesses([]);
     setPartnerSeat(null); 
+
+    setMessages([]);
+    setGameGuesses([]);
+    setPartnerGameSession(null);
+    setIncomingDrawPoint(null);
+    setIncomingArtilleryMove(null);
+    setIncomingArtilleryPosition(null);
   }, [mySeat]);
 
   const resetGameState = useCallback(() => {

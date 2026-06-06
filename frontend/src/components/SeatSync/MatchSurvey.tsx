@@ -109,7 +109,7 @@ export const MatchSurvey: React.FC<Props> = ({
           <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1.5rem', borderRadius: '16px', textAlign: 'center', marginBottom: '2rem', border: '1px solid rgba(255,255,255,0.1)' }}>
             <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem' }}>✈️</span>
             <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-              Whenever you're ready to socialize, enter the live matchmaking pool. The AI will instantly pair you with the best available passenger.
+              Whenever you're ready to socialize, enter the live matchmaking pool. We will instantly pair you with the best available passenger.
             </p>
           </div>
 
@@ -139,7 +139,7 @@ export const MatchSurvey: React.FC<Props> = ({
           <div className={styles.searchingState}>
             <div className={styles.radarSpinner}></div>
             <h3>Finding Your Match...</h3>
-            <p>Cosine Matcher auto-sweep in progress.</p>
+            <p>MatchMaker in progress, please wait while we connect you to your buddy</p>
             <p style={{ color: 'var(--accent-cyan)', fontWeight: 'bold', marginTop: '1rem', animation: 'pulse 1.5s infinite' }}>
               Scanning Cabins...
             </p>
@@ -204,9 +204,6 @@ export const MatchSurvey: React.FC<Props> = ({
         <div className={styles.matchResult}>
           <div className={styles.matchBadge}>AI Linked Link</div>
           <h2 className={styles.matchTitle}>Connected with Seat {partnerSeat}</h2>
-          <p className={styles.matchDesc}>
-            They share your preference for <strong>{answers['q2'] || 'similar media'}</strong> and prefer a <strong>{answers['q3'] || 'similar'}</strong> flight.
-          </p>
           <div className={styles.actionButtons}>
             <button className={styles.secondaryButton} onClick={handleEdit}>
               ✏️ Edit Preferences
