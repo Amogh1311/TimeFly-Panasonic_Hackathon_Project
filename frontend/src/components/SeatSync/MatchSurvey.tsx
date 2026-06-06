@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './MatchSurvey.module.css';
 
 interface SurveyAnswers { [key: string]: string; }
 
 interface Props {
-  isMatched: boolean; // NEW: Tells the survey if we are connected
+  isMatched: boolean; 
   partnerSeat: string;
   matchRequestStatus: 'idle' | 'pending' | 'accepted' | 'declined'; 
-  onSendMatchRequest: (answers: any) => void;       
+  onSubmitProfile: (answers: any) => void;     // <--- NEW: Saves data to Python
+  onSendMatchRequest: () => void;              // <--- UPDATED: Enters the pool (no args)
   onCancelRequest: () => void;                
   onEditStart: () => void;
   onDisconnect: () => void;
@@ -29,9 +30,10 @@ const QUESTIONS = [
 ];
 
 export const MatchSurvey: React.FC<Props> = ({ 
-  isMatched, // NEW
+  isMatched, 
   partnerSeat,
   matchRequestStatus, 
+  onSubmitProfile, 
   onSendMatchRequest, 
   onCancelRequest,
   onEditStart, 
@@ -45,7 +47,6 @@ export const MatchSurvey: React.FC<Props> = ({
   
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
-  // NEW: Force the survey to close if a connection is established externally
   useEffect(() => {
     if (isMatched) {
       setIsEditing(false);
@@ -57,9 +58,10 @@ export const MatchSurvey: React.FC<Props> = ({
     setOpenDropdownId(null); 
   };
 
-  const handleSubmit = () => {
+  // STEP 1: Submit Profile Data
+  const handleProfileSubmit = () => {
     setIsEditing(false);
-    onSendMatchRequest(answers);
+    onSubmitProfile(answers);
   };
 
   const handleEdit = () => {
@@ -69,7 +71,8 @@ export const MatchSurvey: React.FC<Props> = ({
 
   const executeDisconnect = () => {
     setShowConfirmModal(false);
-    setIsEditing(true); 
+    // Note: We don't set isEditing to true here because we want them to 
+    // land back in the "Waiting Room" rather than refilling the form!
     onDisconnect();     
   };
 
@@ -82,13 +85,49 @@ export const MatchSurvey: React.FC<Props> = ({
             <h2 className={styles.matchTitle}>Session Terminated</h2>
             <p className={styles.matchDesc}>The passenger in Seat {partnerSeat} has ended the connection.</p>
             <div className={styles.actionButtons}>
-              <button className={styles.submitButton} onClick={() => { onAcknowledgeDisconnect(); handleSubmit(); }}>
-                🔍 Find New Match
+              <button className={styles.submitButton} onClick={() => { onAcknowledgeDisconnect(); onSendMatchRequest(); }}>
+                🔍 Jump Back into Pool
               </button>
               <button className={styles.secondaryButton} onClick={() => { onAcknowledgeDisconnect(); handleEdit(); }}>
                 ✏️ Edit Preferences
               </button>
             </div>
+          </div>
+        </div>
+      );
+    }
+
+    // NEW: THE WAITING ROOM (Data is submitted, but not actively searching yet)
+    if (matchRequestStatus === 'idle') {
+      return (
+        <div className={styles.surveyContainer}>
+          <div className={styles.header}>
+            <h2 style={{ color: 'var(--accent-cyan)' }}>Profile Saved! 🎒</h2>
+            <p>Your travel data is securely locked in.</p>
+          </div>
+          
+          <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1.5rem', borderRadius: '16px', textAlign: 'center', marginBottom: '2rem', border: '1px solid rgba(255,255,255,0.1)' }}>
+            <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem' }}>✈️</span>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6' }}>
+              Whenever you're ready to socialize, enter the live matchmaking pool. The AI will instantly pair you with the best available passenger.
+            </p>
+          </div>
+
+          <div className={styles.actionButtons}>
+            <button 
+              className={styles.submitButton} 
+              onClick={() => onSendMatchRequest()}
+              style={{ width: '100%', fontSize: '1.2rem', padding: '1rem', boxShadow: '0 0 20px rgba(0, 210, 255, 0.4)' }}
+            >
+              🔍 Enter Live Pool
+            </button>
+            <button 
+              className={styles.secondaryButton} 
+              onClick={handleEdit}
+              style={{ width: '100%', marginTop: '1rem' }}
+            >
+              ✏️ Edit Profile
+            </button>
           </div>
         </div>
       );
@@ -100,31 +139,22 @@ export const MatchSurvey: React.FC<Props> = ({
           <div className={styles.searchingState}>
             <div className={styles.radarSpinner}></div>
             <h3>Finding Your Match...</h3>
-            <p>Cosine Matcher found <strong>Seat {partnerSeat} (94% Compatibility)</strong>.</p>
+            <p>Cosine Matcher auto-sweep in progress.</p>
             <p style={{ color: 'var(--accent-cyan)', fontWeight: 'bold', marginTop: '1rem', animation: 'pulse 1.5s infinite' }}>
-              Sending Connection Request...
+              Scanning Cabins...
             </p>
             
-            {/* NEW CANCEL BUTTON ADDED HERE */}
             <div className={styles.actionButtons} style={{ marginTop: '2rem' }}>
               <button 
-                onClick={() => { onCancelRequest(); handleEdit(); }}
+                onClick={() => onCancelRequest()}
                 style={{ 
                   width: '100%', background: '#ff4444', color: '#ffffff', 
                   border: 'none', borderRadius: '12px', padding: '0.8rem 1.5rem',
                   fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s',
                   boxShadow: '0 4px 15px rgba(255, 68, 68, 0.3)'
                 }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.background = '#e60000';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.background = '#ff4444';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
               >
-                Abort Request
+                Leave Pool
               </button>
             </div>
 
@@ -142,11 +172,11 @@ export const MatchSurvey: React.FC<Props> = ({
             </div>
             <h2 className={styles.matchTitle}>Request Declined</h2>
             <p className={styles.matchDesc}>
-              Seat {partnerSeat} is currently busy or prefers not to connect right now. Don't worry, there are plenty of other passengers onboard!
+              Seat {partnerSeat} is currently busy or prefers not to connect right now. 
             </p>
             <div className={styles.actionButtons}>
-              <button className={styles.submitButton} style={{ width: '100%' }} onClick={handleEdit}>
-                🔙 Return to Survey & Try Again
+              <button className={styles.submitButton} style={{ width: '100%' }} onClick={() => onSendMatchRequest()}>
+                🔙 Jump Back into Pool
               </button>
             </div>
           </div>
@@ -154,6 +184,7 @@ export const MatchSurvey: React.FC<Props> = ({
       );
     }
 
+    // Default Fallback: CONNECTED STATE
     return (
       <div className={styles.surveyContainer} style={{ position: 'relative' }}>
         
@@ -171,7 +202,7 @@ export const MatchSurvey: React.FC<Props> = ({
         )}
 
         <div className={styles.matchResult}>
-          <div className={styles.matchBadge}>94% Match</div>
+          <div className={styles.matchBadge}>AI Linked Link</div>
           <h2 className={styles.matchTitle}>Connected with Seat {partnerSeat}</h2>
           <p className={styles.matchDesc}>
             They share your preference for <strong>{answers['q2'] || 'similar media'}</strong> and prefer a <strong>{answers['q3'] || 'similar'}</strong> flight.
@@ -188,14 +219,6 @@ export const MatchSurvey: React.FC<Props> = ({
                 fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s',
                 boxShadow: '0 4px 15px rgba(255, 68, 68, 0.3)'
               }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.background = '#e60000';
-                e.currentTarget.style.transform = 'translateY(-2px)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.background = '#ff4444';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
             >
               Terminate Connection
             </button>
@@ -209,7 +232,7 @@ export const MatchSurvey: React.FC<Props> = ({
     <div className={styles.surveyContainer}>
       <div className={styles.header}>
         <h2>Passenger Matchmaking</h2>
-        <p>Find your perfect flight neighbor.</p>
+        <p>Step 1: Fill out your profile.</p>
       </div>
 
       <div className={styles.questionList}>
@@ -238,8 +261,9 @@ export const MatchSurvey: React.FC<Props> = ({
         ))}
       </div>
 
-      <button className={styles.submitButton} onClick={handleSubmit} disabled={Object.keys(answers).length < QUESTIONS.length}>
-        Find My Match
+      {/* Button changed to say Submit Profile */}
+      <button className={styles.submitButton} onClick={handleProfileSubmit} disabled={Object.keys(answers).length < QUESTIONS.length}>
+        Submit Profile
       </button>
     </div>
   );

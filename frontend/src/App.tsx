@@ -18,25 +18,8 @@ export interface FlightTelemetry {
   passengerAge: string;
 }
 
-const MOCK_AI_RESPONSE: AiPayload = {
-  greeting: "I noticed we've hit some heavy turbulence. Here are some calming options.",
-  detected_vibe: "Calming Distraction",
-  items: [
-    { id: "1", title: "Midnight Coffee Shop", media_type: "Music", thumbnail_url: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800&q=80" },
-    { id: "2", title: "The Office", media_type: "Video", thumbnail_url: "https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?w=800&q=80" },
-    { id: "3", title: "Deep Sleep Meditation", media_type: "Audiobook", thumbnail_url: "https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=800&q=80" },
-    { id: "4", title: "Planet Earth", media_type: "Documentary", thumbnail_url: "https://images.unsplash.com/photo-1610992015732-284000305018?w=800&q=80" },
-    { id: "5", title: "Lofi Beats", media_type: "Music", thumbnail_url: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&q=80" },
-    { id: "6", title: "Acoustic Covers", media_type: "Music", thumbnail_url: "https://images.unsplash.com/photo-1485579149621-3123dd97988d?w=800&q=80" },
-    { id: "7", title: "Nature Sounds", media_type: "Audio", thumbnail_url: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80" },
-    { id: "8", title: "Comedy Special", media_type: "Video", thumbnail_url: "https://images.unsplash.com/photo-1585699324551-f6c309eedeca?w=800&q=80" }
-  ]
-};
-
 export const App: React.FC = () => {
   const currentSeat = new URLSearchParams(window.location.search).get('seat') || '12A';
-  const partnerSeat = currentSeat === '12A' ? '14B' : '12A';
-
   const [telemetry, setTelemetry] = useState<FlightTelemetry>({
     weather: 'Clear Skies', flightPhase: 'Cruising', passengerProfile: 'Business Traveler', passengerAge: '28'
   });
@@ -71,9 +54,10 @@ export const App: React.FC = () => {
     incomingArtilleryMove, sendArtilleryMove, passTurn, 
     matchRequestStatus, incomingMatchRequest, sendMatchRequest, respondToMatchRequest,
     partnerGameSession, sendGameSessionUpdate, terminateConnection, resetGameState, incomingClear, sendClearBoard,
-    cancelMatchRequest, incomingArtilleryPosition, sendArtilleryPosition
-  } = useSeatSyncSocket('room_12A_14B', isSeatSyncMatched, currentSeat);
+    cancelMatchRequest, incomingArtilleryPosition, sendArtilleryPosition, partnerSeat: matchedSeat, submitSurvey
+  } = useSeatSyncSocket( isSeatSyncMatched, currentSeat);
 
+  const partnerSeat = matchedSeat || 'Searching...';
   const isMyTurn = activeTurnSeat === currentSeat;
 
   useEffect(() => {
@@ -129,13 +113,32 @@ export const App: React.FC = () => {
     }
   }, [partnerGameSession, partnerSeat, resetGameState]);
 
-  const forceTriggerAI = () => {
-    setAiData(MOCK_AI_RESPONSE);
-    setIsModalOpen(true);
+  const triggerAI = async () => {
+    try {
+      // Fetch live predictions from FastAPI
+      const response = await fetch('http://localhost:8000/api/ai-recommendations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(telemetry)
+      });
+      
+      const realAiData = await response.json();
+      setAiData(realAiData);
+      setIsModalOpen(true); 
+      
+    } catch (error) {
+      console.error("AI Engine offline, falling back...", error);
+      setAiData({
+          greeting: "Connection to AI lost. Please check your network.",
+          detected_vibe: "Offline Mode",
+          items: []
+      });
+      setIsModalOpen(true);
+    }
   };
 
   const handleIdle = useCallback(() => {
-    if (!isModalOpen && !isRestMode) forceTriggerAI();
+    if (!isModalOpen && !isRestMode) triggerAI();
   }, [isModalOpen, isRestMode]);
 
   useIdleTimer({ timeoutMs: 120000, onIdle: handleIdle });
@@ -170,6 +173,13 @@ export const App: React.FC = () => {
             <h2 style={{ color: 'white', marginBottom: '1rem', fontSize: '1.8rem' }}>Connection Request!</h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', lineHeight: '1.6', marginBottom: '2.5rem' }}>
               <strong>Seat {incomingMatchRequest.fromSeat}</strong> is trying to connect with you. Based on the survey, we found you two are travel buddies! 😊
+              
+              {/* NEW: DYNAMIC AI MATCH SCORE */}
+              {incomingMatchRequest.score && (
+                <span style={{ display: 'block', marginTop: '0.8rem', color: 'var(--accent-cyan)', fontWeight: 'bold' }}>
+                  🧠 AI Match Score: {incomingMatchRequest.score}%
+                </span>
+              )}
             </p>
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
               <button 
@@ -331,6 +341,7 @@ export const App: React.FC = () => {
                 isMatched={isSeatSyncMatched}
                 partnerSeat={partnerSeat}
                 matchRequestStatus={matchRequestStatus}
+                onSubmitProfile={submitSurvey}
                 onSendMatchRequest={sendMatchRequest}
                 onCancelRequest={cancelMatchRequest}
                 onEditStart={() => setIsSeatSyncMatched(false)} 
@@ -473,7 +484,7 @@ export const App: React.FC = () => {
               transition: 'all 0.2s ease',
               boxShadow: '0 4px 15px rgba(0, 210, 255, 0.2)' 
             }} 
-            onClick={forceTriggerAI}
+            onClick={triggerAI}
             onMouseOver={(e) => {
               e.currentTarget.style.transform = 'translateY(-2px)';
               e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 210, 255, 0.4)';
