@@ -7,11 +7,12 @@ export interface ArtilleryGameProps {
   incomingMove?: { angle: number; power: number; nextObstacle: number } | null;
   onSendMove?: (move: { angle: number; power: number; nextObstacle: number }) => void;
   onTurnEnd?: () => void;
-  isActive: boolean; // NEW: Added to track if the game just started
+  isActive: boolean; 
+  onQuit?: () => void; // NEW: Added onQuit prop
 }
 
 export const ArtilleryGame: React.FC<ArtilleryGameProps> = ({ 
-  playerSeat, isMyTurn, incomingMove, onSendMove, onTurnEnd, isActive 
+  playerSeat, isMyTurn, incomingMove, onSendMove, onTurnEnd, isActive, onQuit 
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
@@ -26,7 +27,7 @@ export const ArtilleryGame: React.FC<ArtilleryGameProps> = ({
   // Dynamic Obstacle (Randomized height between 50 and 150)
   const [obstacleHeight, setObstacleHeight] = useState(100);
 
-  // NEW: Reset game state when a new session starts
+  // Reset game state when a new session starts
   useEffect(() => {
     if (isActive) {
       setP1Health(10);
@@ -253,6 +254,24 @@ export const ArtilleryGame: React.FC<ArtilleryGameProps> = ({
           {isMyTurn ? "FIRE" : "WAITING..."}
         </button>
       </div>
+
+      {/* NEW: Quit Game Button nicely placed in the natural flow below the controls */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
+        <button 
+          onClick={onQuit} 
+          style={{ 
+            background: 'rgba(255, 68, 68)', color: '#ffffff', 
+            border: '1px solid #ff4444', borderRadius: '8px', 
+            padding: '0.4rem 1.5rem', cursor: 'pointer', fontWeight: 'bold', 
+            transition: 'all 0.2s', width: '100%', maxWidth: '200px'
+          }}
+          onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(255, 10, 10, 0.3)'; }}
+          onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(255, 10, 10, 0.15)'; }}
+        >
+          🛑 Quit Game
+        </button>
+      </div>
+
     </div>
   );
 };

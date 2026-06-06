@@ -64,13 +64,13 @@ export const App: React.FC = () => {
   const [toastType, setToastType] = useState<'message' | 'alert'>('message');
   const [hasUnreadIndicator, setHasUnreadIndicator] = useState(false);
 
-  // UPDATED: Added resetGameState here
   const { 
-    messages, incomingDrawPoint, sendMessage, sendDrawStroke, hasPartnerLeft, simulatePartnerDisconnect,
+    messages, incomingDrawPoint, sendMessage, sendDrawStroke, hasPartnerLeft,
     gameGuesses, sendGameGuess, activeTurnSeat,
     incomingArtilleryMove, sendArtilleryMove, passTurn, 
-    matchRequestStatus, incomingMatchRequest, sendMatchRequest, respondToMatchRequest, simulateIncomingRequest,
-    partnerGameSession, sendGameSessionUpdate, terminateConnection, resetGameState
+    matchRequestStatus, incomingMatchRequest, sendMatchRequest, respondToMatchRequest,
+    partnerGameSession, sendGameSessionUpdate, terminateConnection, resetGameState, incomingClear, sendClearBoard,
+    cancelMatchRequest
   } = useSeatSyncSocket('room_12A_14B', isSeatSyncMatched, currentSeat);
 
   const isMyTurn = activeTurnSeat === currentSeat;
@@ -112,15 +112,12 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     if (partnerGameSession) {
-      // 1. Automatically start or close the game on this screen
       setGameStates(prev => ({ ...prev, [partnerGameSession.game]: partnerGameSession.action === 'start' }));
       
-      // NEW: Wipe memory if partner starts!
       if (partnerGameSession.action === 'start') {
         resetGameState(); 
       }
 
-      // 2. If they quit, show the red alert notification
       if (partnerGameSession.action === 'quit') {
         setToastNotification(`Seat ${partnerSeat} quit the ${partnerGameSession.game === 'draw' ? 'Canvas' : 'Artillery'} game.`);
         setToastType('alert');
@@ -143,7 +140,7 @@ export const App: React.FC = () => {
   const handleStartGame = (game: 'draw' | 'artillery') => {
     setGameStates(prev => ({ ...prev, [game]: true }));
     sendGameSessionUpdate(game, 'start'); 
-    resetGameState(); // NEW: Wipes memory if you start!
+    resetGameState(); 
   };
 
   const handleQuitGame = (game: 'draw' | 'artillery') => {
@@ -328,9 +325,10 @@ export const App: React.FC = () => {
             <div style={{ flex: 1, minWidth: '350px' }}>
               <MatchSurvey 
                 isMatched={isSeatSyncMatched}
+                partnerSeat={partnerSeat}
                 matchRequestStatus={matchRequestStatus}
                 onSendMatchRequest={sendMatchRequest}
-                onMatchReady={() => setIsSeatSyncMatched(true)} 
+                onCancelRequest={cancelMatchRequest}
                 onEditStart={() => setIsSeatSyncMatched(false)} 
                 onDisconnect={() => {
                   terminateConnection();
@@ -344,8 +342,8 @@ export const App: React.FC = () => {
             </div>
             
             {isSeatSyncMatched && !hasPartnerLeft && (
-              <div style={{ flex: 2, display: 'flex', flexDirection: 'column', gap: '1.5rem', animation: 'fadeIn 0.5s ease-out' }}>
-                <div style={{ flex: 1 }}>
+                <div style={{ flex: 2, display: 'flex', flexDirection: 'column', gap: '1.5rem', animation: 'fadeIn 0.5s ease-out', height: '100%', minHeight: 0 }}>
+                <div style={{ flex: 2, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
                   <ChatPanel messages={messages} onSendMessage={sendMessage} />
                 </div>
                 
@@ -394,8 +392,11 @@ export const App: React.FC = () => {
                           guesses={gameGuesses}
                           onSendGuess={sendGameGuess}
                           isMyTurn={isMyTurn}
-                          onPassTurn={passTurn} // NEW: Passing down the pass turn function
-                          isActive={gameStates.draw} // NEW: Passing down active state
+                          onPassTurn={passTurn} 
+                          isActive={gameStates.draw} 
+                          onQuit={() => handleQuitGame('draw')} // <--- NEW: Passed down!
+                          incomingClear={incomingClear}
+                          onClearBoard={sendClearBoard}
                         />
                       ) : (
                         <ArtilleryGame 
@@ -404,7 +405,8 @@ export const App: React.FC = () => {
                           incomingMove={incomingArtilleryMove}
                           onSendMove={sendArtilleryMove}
                           onTurnEnd={passTurn}
-                          isActive={gameStates.artillery} // NEW: Passing down active state
+                          isActive={gameStates.artillery} 
+                          onQuit={() => handleQuitGame('artillery')} // <--- NEW: Passed down!
                         />
                       )}
                     </div>
@@ -426,23 +428,8 @@ export const App: React.FC = () => {
                         </button>
                       </div>
                     )}
-
-                    {gameStates[activeGame] && (
-                      <button 
-                        onClick={() => handleQuitGame(activeGame)} 
-                        style={{ 
-                          position: 'absolute', top: '12px', right: '12px', 
-                          background: 'rgba(255, 10, 10, 0.15)', color: '#ff4444', 
-                          border: '1px solid #ff4444', borderRadius: '8px', 
-                          padding: '0.4rem 1rem', cursor: 'pointer', fontWeight: 'bold', 
-                          zIndex: 10, backdropFilter: 'blur(4px)', transition: 'all 0.2s' 
-                        }}
-                        onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(255, 10, 10, 0.3)'; }}
-                        onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(255, 10, 10, 0.15)'; }}
-                      >
-                        🛑 Quit Game
-                      </button>
-                    )}
+                    
+                    {/* THE OLD FLOATING QUIT BUTTON WAS DELETED FROM RIGHT HERE! */}
 
                   </div>
                   

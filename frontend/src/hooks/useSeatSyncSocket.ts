@@ -48,6 +48,8 @@ export const useSeatSyncSocket = (roomName: string, isMatched: boolean, mySeat: 
   const [matchRequestStatus, setMatchRequestStatus] = useState<'idle' | 'pending' | 'accepted' | 'declined'>('idle');
   const [incomingMatchRequest, setIncomingMatchRequest] = useState<{fromSeat: string} | null>(null);
 
+  const [incomingClear, setIncomingClear] = useState<number>(0);
+
   const partnerSeat = mySeat === '12A' ? '14B' : '12A';
 
   // 1. INITIAL REGISTRATION & HANDSHAKE LISTENER
@@ -59,11 +61,13 @@ export const useSeatSyncSocket = (roomName: string, isMatched: boolean, mySeat: 
     socket.on('receive_match_request', (data) => setIncomingMatchRequest(data));
     socket.on('match_request_accepted', () => setMatchRequestStatus('accepted'));
     socket.on('match_request_declined', () => setMatchRequestStatus('declined'));
+    socket.on('match_request_cancelled', () => setIncomingMatchRequest(null));
 
     return () => {
       socket.off('receive_match_request');
       socket.off('match_request_accepted');
       socket.off('match_request_declined');
+      socket.off('match_request_cancelled');
     };
   }, [mySeat]);
 
@@ -76,7 +80,6 @@ export const useSeatSyncSocket = (roomName: string, isMatched: boolean, mySeat: 
       setHasPartnerLeft(false);
       setIncomingArtilleryMove(null);
       setPartnerGameSession(null);
-      setMatchRequestStatus('idle'); 
       return;
     }
 
@@ -90,6 +93,10 @@ export const useSeatSyncSocket = (roomName: string, isMatched: boolean, mySeat: 
 
     socket.on('receive_draw', (point: DrawPoint) => {
       setIncomingDrawPoint(point);
+    });
+
+    socket.on('receive_clear_board', () => {
+      setIncomingClear(prev => prev + 1);
     });
 
     socket.on('receive_guess', (guess: GameGuess) => {
@@ -110,11 +117,13 @@ export const useSeatSyncSocket = (roomName: string, isMatched: boolean, mySeat: 
 
     socket.on('partner_disconnected', () => {
       setHasPartnerLeft(true);
+      setMatchRequestStatus('idle');
     });
     
     return () => {
       socket.off('receive_message');
       socket.off('receive_draw');
+      socket.off('receive_clear_board');
       socket.off('receive_guess');
       socket.off('receive_artillery_move');
       socket.off('partner_game_update');
@@ -126,12 +135,19 @@ export const useSeatSyncSocket = (roomName: string, isMatched: boolean, mySeat: 
   // Sending the request to find a match
   const sendMatchRequest = useCallback((surveyAnswers: any) => {
     setMatchRequestStatus('pending');
+    setHasPartnerLeft(false); // <--- ADD THIS LINE
     socket.emit('request_match', { seat: mySeat, survey: surveyAnswers });
   }, [mySeat]);
 
   // Responding to someone else's request
   const respondToMatchRequest = useCallback((accept: boolean) => {
     setIncomingMatchRequest(null);
+    if (accept) {
+      setHasPartnerLeft(false); // <--- ADD THIS LINE: Instantly clears the Terminated screen
+      setMatchRequestStatus('accepted');
+    } else {
+      setMatchRequestStatus('declined');
+    }
     socket.emit('respond_to_match', { accept, fromSeat: mySeat, toSeat: partnerSeat });
   }, [mySeat, partnerSeat]);
 
@@ -139,6 +155,11 @@ export const useSeatSyncSocket = (roomName: string, isMatched: boolean, mySeat: 
   const simulateIncomingRequest = useCallback(() => {
     setIncomingMatchRequest({ fromSeat: partnerSeat });
   }, [partnerSeat]);
+
+  const cancelMatchRequest = useCallback(() => {
+    setMatchRequestStatus('idle'); // Immediately reset our own screen
+    socket.emit('cancel_match_request', { seat: mySeat }); // Tell the server
+  }, [mySeat]);
 
   // LIVE TRANSMISSION EMITTERS
   const sendMessage = useCallback((text: string) => {
@@ -154,6 +175,10 @@ export const useSeatSyncSocket = (roomName: string, isMatched: boolean, mySeat: 
 
   const sendDrawStroke = useCallback((point: DrawPoint) => {
     socket.emit('draw_stroke', { room: roomName, point });
+  }, [roomName]);
+
+  const sendClearBoard = useCallback(() => {
+    socket.emit('clear_board', { room: roomName });
   }, [roomName]);
 
   const sendGameGuess = useCallback((text: string) => {
@@ -222,6 +247,7 @@ export const useSeatSyncSocket = (roomName: string, isMatched: boolean, mySeat: 
     respondToMatchRequest,    
     simulateIncomingRequest,  
     simulatePartnerDisconnect,
+    cancelMatchRequest,
     sendMessage,
     sendDrawStroke,
     sendGameGuess,
@@ -229,6 +255,8 @@ export const useSeatSyncSocket = (roomName: string, isMatched: boolean, mySeat: 
     passTurn,      
     sendGameSessionUpdate,
     terminateConnection,
-    resetGameState // <--- Exported here!
+    resetGameState, // <--- Exported here!
+    incomingClear,
+    sendClearBoard
   };
 };

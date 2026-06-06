@@ -10,14 +10,17 @@ interface DrawingBoardProps {
   guesses?: GameGuess[];
   onSendGuess?: (text: string) => void;
   isMyTurn: boolean;
-  onPassTurn?: () => void; // NEW: Added to pass the turn
-  isActive: boolean;       // NEW: Added to track if the game just started
+  onPassTurn?: () => void;
+  isActive: boolean;
+  onQuit?: () => void; // NEW: Added onQuit prop
+  incomingClear?: number;
+  onClearBoard?: () => void;
 }
 
 const NEON_COLORS = ['#00d2ff', '#ff007f', '#00ff66', '#ffea00', '#ffffff'];
 
 export const DrawingBoard: React.FC<DrawingBoardProps> = ({ 
-  incomingStroke, onDrawStroke, guesses = [], onSendGuess, isMyTurn, onPassTurn, isActive 
+  incomingStroke, onDrawStroke, guesses = [], onSendGuess, isMyTurn, onPassTurn, isActive, onQuit , incomingClear, onClearBoard
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const guessesEndRef = useRef<HTMLDivElement>(null);
@@ -30,10 +33,12 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({
     if (!isMyTurn) return; 
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
-    if (canvas && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (canvas && ctx) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (onClearBoard) onClearBoard(); // <--- Tells the partner!
+    }
   };
 
-  // NEW: Automatically clear canvas when a new game starts
   useEffect(() => {
     if (isActive && canvasRef.current) {
       const ctx = canvasRef.current.getContext('2d');
@@ -84,6 +89,14 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({
     lastPos.current = { x: currentX, y: currentY };
   };
 
+  useEffect(() => {
+    if (incomingClear && incomingClear > 0) {
+      const canvas = canvasRef.current;
+      const ctx = canvas?.getContext('2d');
+      if (canvas && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }, [incomingClear]);
+
   const handleGuessSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!guessInput.trim() || !onSendGuess || isMyTurn) return;
@@ -121,7 +134,6 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({
             Clear
           </button>
           
-          {/* NEW: Pass Turn Button */}
           <button 
             className={styles.clearBtn} 
             onClick={onPassTurn} 
@@ -185,6 +197,30 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({
           </button>
         </form>
       </div>
+
+      {/* NEW: Quit Game Button nicely placed in the natural flow below the guessing section */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
+        <button 
+          onClick={onQuit} 
+          style={{ 
+            background: '#ff4444', color: '#ffffff', border: 'none', 
+            borderRadius: '8px', padding: '0.5rem 1.5rem', cursor: 'pointer', 
+            fontWeight: 'bold', transition: 'all 0.2s', width: '100%', maxWidth: '200px',
+            boxShadow: '0 4px 15px rgba(255, 68, 68, 0.3)'
+          }}
+          onMouseOver={(e) => { 
+            e.currentTarget.style.background = '#e60000'; 
+            e.currentTarget.style.transform = 'translateY(-2px)';
+          }}
+          onMouseOut={(e) => { 
+            e.currentTarget.style.background = '#ff4444'; 
+            e.currentTarget.style.transform = 'translateY(0)';
+          }}
+        >
+          🛑 Quit Game
+        </button>
+      </div>
+
     </div>
   );
 };

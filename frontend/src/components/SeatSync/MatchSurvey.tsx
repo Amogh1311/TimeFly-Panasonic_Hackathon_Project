@@ -5,9 +5,10 @@ interface SurveyAnswers { [key: string]: string; }
 
 interface Props {
   isMatched: boolean; // NEW: Tells the survey if we are connected
+  partnerSeat: string;
   matchRequestStatus: 'idle' | 'pending' | 'accepted' | 'declined'; 
-  onSendMatchRequest: (answers: any) => void;                       
-  onMatchReady: () => void;
+  onSendMatchRequest: (answers: any) => void;       
+  onCancelRequest: () => void;                
   onEditStart: () => void;
   onDisconnect: () => void;
   hasPartnerLeft: boolean;          
@@ -29,9 +30,10 @@ const QUESTIONS = [
 
 export const MatchSurvey: React.FC<Props> = ({ 
   isMatched, // NEW
+  partnerSeat,
   matchRequestStatus, 
   onSendMatchRequest, 
-  onMatchReady, 
+  onCancelRequest,
   onEditStart, 
   onDisconnect, 
   hasPartnerLeft, 
@@ -78,7 +80,7 @@ export const MatchSurvey: React.FC<Props> = ({
           <div className={styles.matchResult}>
             <div className={styles.dangerBadge}>Connection Lost</div>
             <h2 className={styles.matchTitle}>Session Terminated</h2>
-            <p className={styles.matchDesc}>The passenger in Seat 14B has ended the connection.</p>
+            <p className={styles.matchDesc}>The passenger in Seat {partnerSeat} has ended the connection.</p>
             <div className={styles.actionButtons}>
               <button className={styles.submitButton} onClick={() => { onAcknowledgeDisconnect(); handleSubmit(); }}>
                 🔍 Find New Match
@@ -98,10 +100,34 @@ export const MatchSurvey: React.FC<Props> = ({
           <div className={styles.searchingState}>
             <div className={styles.radarSpinner}></div>
             <h3>Finding Your Match...</h3>
-            <p>Cosine Matcher found <strong>Seat 14B (94% Compatibility)</strong>.</p>
+            <p>Cosine Matcher found <strong>Seat {partnerSeat} (94% Compatibility)</strong>.</p>
             <p style={{ color: 'var(--accent-cyan)', fontWeight: 'bold', marginTop: '1rem', animation: 'pulse 1.5s infinite' }}>
               Sending Connection Request...
             </p>
+            
+            {/* NEW CANCEL BUTTON ADDED HERE */}
+            <div className={styles.actionButtons} style={{ marginTop: '2rem' }}>
+              <button 
+                onClick={() => { onCancelRequest(); handleEdit(); }}
+                style={{ 
+                  width: '100%', background: '#ff4444', color: '#ffffff', 
+                  border: 'none', borderRadius: '12px', padding: '0.8rem 1.5rem',
+                  fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s',
+                  boxShadow: '0 4px 15px rgba(255, 68, 68, 0.3)'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.background = '#e60000';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.background = '#ff4444';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                Abort Request
+              </button>
+            </div>
+
           </div>
         </div>
       );
@@ -116,7 +142,7 @@ export const MatchSurvey: React.FC<Props> = ({
             </div>
             <h2 className={styles.matchTitle}>Request Declined</h2>
             <p className={styles.matchDesc}>
-              Seat 14B is currently busy or prefers not to connect right now. Don't worry, there are plenty of other passengers onboard!
+              Seat {partnerSeat} is currently busy or prefers not to connect right now. Don't worry, there are plenty of other passengers onboard!
             </p>
             <div className={styles.actionButtons}>
               <button className={styles.submitButton} style={{ width: '100%' }} onClick={handleEdit}>
@@ -146,7 +172,7 @@ export const MatchSurvey: React.FC<Props> = ({
 
         <div className={styles.matchResult}>
           <div className={styles.matchBadge}>94% Match</div>
-          <h2 className={styles.matchTitle}>Connected with Seat 14B</h2>
+          <h2 className={styles.matchTitle}>Connected with Seat {partnerSeat}</h2>
           <p className={styles.matchDesc}>
             They share your preference for <strong>{answers['q2'] || 'similar media'}</strong> and prefer a <strong>{answers['q3'] || 'similar'}</strong> flight.
           </p>
@@ -154,8 +180,24 @@ export const MatchSurvey: React.FC<Props> = ({
             <button className={styles.secondaryButton} onClick={handleEdit}>
               ✏️ Edit Preferences
             </button>
-            <button className={styles.dangerButton} onClick={() => setShowConfirmModal(true)}>
-              🛑 Terminate Connection
+            <button 
+              onClick={() => setShowConfirmModal(true)}
+              style={{ 
+                background: '#ff4444', color: '#ffffff', 
+                border: 'none', borderRadius: '12px', padding: '0.8rem 1.5rem',
+                fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s',
+                boxShadow: '0 4px 15px rgba(255, 68, 68, 0.3)'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = '#e60000';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = '#ff4444';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
+            >
+              Terminate Connection
             </button>
           </div>
         </div>
