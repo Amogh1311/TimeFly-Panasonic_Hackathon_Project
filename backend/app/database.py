@@ -6,6 +6,12 @@ import os
 # In-memory cache so we only fetch from the API once when the server boots up.
 MEDIA_CACHE = []
 
+DEFAULT_THUMBNAIL = "https://via.placeholder.com/600x300/0a0e17/ffffff?text=Media"
+
+# Unique placeholder thumbnails for retries
+PLACEHOLDER_1 = "https://via.placeholder.com/600x300/1a1f2e/ffffff?text=No+Img"
+PLACEHOLDER_2 = "https://via.placeholder.com/600x300/121824/ffffff?text=Media"
+
 def load_fallback_media():
     """Load static media from content_database.json as fallback"""
     base_dir = os.path.dirname(__file__)
@@ -18,6 +24,9 @@ def load_fallback_media():
         for item in fallback:
             media_type = item.get('media_type', 'Music')
             tags = item.get('tags', [])
+            
+            # Ensure thumbnail_url exists, use default if missing
+            thumbnail = item.get('thumbnail_url', '') or DEFAULT_THUMBNAIL
             
             # If no tags, add defaults based on media type
             if not tags:
@@ -36,7 +45,7 @@ def load_fallback_media():
                 "id": item.get("id", str(random.randint(10000, 99999))),
                 "title": item.get("title", "Unknown"),
                 "media_type": media_type,
-                "thumbnail_url": item.get("thumbnail_url", ""),
+                "thumbnail_url": thumbnail,
                 "tags": tags
             })
         return items
@@ -62,18 +71,25 @@ def fetch_itunes_media(search_term, entity_type, display_type, limit=22):
                 continue
                 
             raw_img_url = item.get('artworkUrl100', '')
-            high_res_img = raw_img_url.replace('100x100bb', '600x600bb')
+            if not raw_img_url:
+                high_res_img = DEFAULT_THUMBNAIL
+            else:
+                high_res_img = raw_img_url.replace('100x100bb', '600x600bb')
             
-            tags = [item.get('primaryGenreName', 'Entertainment')]
+            genre = item.get('primaryGenreName', 'Entertainment')
+            tags = [genre]
             
+            # All content types get broad vibe coverage
             if display_type == "Music": 
-                tags.extend(["Calming Distraction", "Focused Work", "Audio Only"])
+                tags.extend(["Calming Distraction", "Focused Work", "Audio Only", "Relaxing", "Upbeat Entertainment", "General Entertainment"])
             elif display_type == "Audiobook":
-                tags.extend(["Audio Only", "Focused Work", "Relaxing"])
-            elif display_type in ["Movie", "TV Show"]: 
-                tags.extend(["General Entertainment", "Upbeat Entertainment", "Family Entertainment"])
+                tags.extend(["Audio Only", "Focused Work", "Relaxing", "Calming Distraction", "General Entertainment"])
+            elif display_type == "Movie": 
+                tags.extend(["General Entertainment", "Upbeat Entertainment", "Family Entertainment", "Focused Work", "Calming Distraction"])
+            elif display_type == "TV Show":
+                tags.extend(["General Entertainment", "Upbeat Entertainment", "Family Entertainment", "Focused Work"])
             elif display_type == "Documentary":
-                tags.extend(["Focused Work", "General Entertainment"])
+                tags.extend(["Focused Work", "General Entertainment", "Educational", "Upbeat Entertainment", "Calming Distraction"])
             
             formatted_items.append({
                 "id": str(item.get('trackId', random.randint(10000, 99999))),

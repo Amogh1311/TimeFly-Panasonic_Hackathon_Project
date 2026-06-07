@@ -1,6 +1,8 @@
 import React from 'react';
 import styles from './RecommendationModal.module.css';
 
+const DEFAULT_THUMBNAIL = 'https://via.placeholder.com/600x300/0a0e17/ffffff?text=Media';
+
 // The exact data structure the AI backend will send us
 export interface RecommendedItem {
   id: string;
@@ -49,7 +51,12 @@ export const RecommendationModal: React.FC<Props> = ({ isOpen, onClose, payload 
               
               {/* NEW: Image Wrapper for the Hover Overlay */}
               <div className={styles.imageWrapper}>
-                <img src={item.thumbnail_url} alt={item.title} className={styles.itemImage} />
+                <img 
+                  src={item.thumbnail_url || DEFAULT_THUMBNAIL} 
+                  alt={item.title} 
+                  className={styles.itemImage}
+                  onError={(e) => { (e.target as HTMLImageElement).src = DEFAULT_THUMBNAIL; }}
+                />
                 <div className={styles.playOverlay}>
                   <button className={styles.playButton}>▶ Play</button>
                 </div>

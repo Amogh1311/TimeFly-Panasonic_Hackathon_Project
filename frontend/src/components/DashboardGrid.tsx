@@ -87,6 +87,8 @@ interface MediaItem {
 
 const FILTERS = ['All', 'Movie', 'TV Show', 'Music', 'Audiobook', 'Documentary'];
 
+const DEFAULT_THUMBNAIL = 'https://via.placeholder.com/600x300/0a0e17/ffffff?text=Media';
+
 export const DashboardGrid: React.FC<DashboardGridProps> = ({ telemetry }) => {
   const [activeFilter, setActiveFilter] = useState('All');
   const [isRecalculating, setIsRecalculating] = useState(false);
@@ -104,16 +106,16 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({ telemetry }) => {
           body: JSON.stringify(telemetry), // Send live telemetry to Python!
         });
         
-        const data = await response.json();
+const data = await response.json();
         
-        // Map backend 'thumbnail_url' to frontend 'thumbnail'
-        const formattedItems = data.items.map((item: any) => ({
-          id: item.id,
-          title: item.title,
-          type: item.media_type, // Assuming your backend sends 'media_type'
-          matchScore: 0, // Placeholder
-          thumbnail: item.thumbnail_url // BACKEND KEY MAPPING
-        }));
+         // Map backend 'thumbnail_url' to frontend 'thumbnail'
+         const formattedItems = data.items.map((item: any) => ({
+           id: item.id,
+           title: item.title,
+           type: item.media_type,
+           matchScore: 0,
+           thumbnail: item.thumbnail_url || DEFAULT_THUMBNAIL
+         }));
 
         setAdaptiveMedia(formattedItems);
       } catch (error) {
@@ -175,13 +177,18 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({ telemetry }) => {
           {filteredMedia.map(item => (
             <div key={item.id} className={styles.mediaCard} style={{ animation: 'fadeIn 0.5s ease-out' }}>
               
-              <div className={styles.thumbnailWrapper}>
-                <img src={item.thumbnail} alt={item.title} className={styles.thumbnail} />
-                
-                <div className={styles.playOverlay}>
-                  <button className={styles.playButton}>▶ Play Now</button>
-                </div>
-              </div>
+<div className={styles.thumbnailWrapper}>
+                 <img 
+                   src={item.thumbnail} 
+                   alt={item.title} 
+                   className={styles.thumbnail}
+                   onError={(e) => { (e.target as HTMLImageElement).src = DEFAULT_THUMBNAIL; }}
+                 />
+                 
+                 <div className={styles.playOverlay}>
+                   <button className={styles.playButton}>▶ Play Now</button>
+                 </div>
+               </div>
 
               <div className={styles.cardInfo}>
                 <h4 className={styles.title}>{item.title}</h4>
