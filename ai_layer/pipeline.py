@@ -1,5 +1,6 @@
 import joblib
 import os
+import pandas as pd 
 from groq import Groq
 from dotenv import load_dotenv
 
@@ -30,15 +31,31 @@ class AILayer:
             p_raw = telemetry.get('flightPhase', 'Cruising')
             pro_raw = telemetry.get('passengerProfile', 'Business Traveler')
 
-            # 1. Ask the ML Model for the vibe
-            w_code = self.encoders['weather'].transform([w_raw])[0]
-            p_code = self.encoders['phase'].transform([p_raw])[0]
-            pro_code = self.encoders['profile'].transform([pro_raw])[0]
+            # --- THE SAFETY NET ---
+            # Prevents crashes if the UI sends a string the model has never seen
+            def safe_encode(encoder_name, value, fallback):
+                encoder = self.encoders[encoder_name]
+                if value in encoder.classes_:
+                    return encoder.transform([value])[0]
+                print(f"⚠️ Warning: Unknown value '{value}', falling back to '{fallback}'")
+                return encoder.transform([fallback])[0]
+
+            # 1. Translate text to numbers safely
+            w_code = safe_encode('weather', w_raw, 'Clear Skies')
+            p_code = safe_encode('phase', p_raw, 'Cruising')
+            pro_code = safe_encode('profile', pro_raw, 'Business Traveler')
             
-            prediction = self.model.predict([[w_code, p_code, pro_code]])
+            # 2. Format exactly as the model expects to prevent terminal warnings!
+            X_input = pd.DataFrame(
+                [[w_code, p_code, pro_code]], 
+                columns=['weather_code', 'phase_code', 'profile_code']
+            )
+            
+            # 3. Get the prediction
+            prediction = self.model.predict(X_input)
             vibe = prediction[0]
             
-            # 2. Ask Groq to write a dynamic greeting!
+            # 4. Ask Groq to write a dynamic greeting!
             greeting = self._generate_groq_greeting(vibe, w_raw, p_raw, pro_raw)
             
             return {
@@ -63,7 +80,7 @@ class AILayer:
         - Selected Vibe: {vibe}
 
         Task: Write a concise, human-sounding sentence. 
-        You MUST mention the current weather,Flight Phase and the passenger profile in your response 
+        You MUST mention the current weather, Flight Phase and the passenger profile in your response 
         to show you are actively listening to the flight telemetry.
         """
         

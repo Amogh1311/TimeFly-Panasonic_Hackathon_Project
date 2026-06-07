@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import styles from './App.module.css';
 import { DashboardGrid } from './components/DashboardGrid';
 import { FlightSimulatorControls } from './components/FlightSimulatorControls/FlightSimulatorControls';
@@ -44,8 +44,26 @@ export const App: React.FC = () => {
   const [isRestMode, setIsRestMode] = useState(false);
 
   const [lastMessageCount, setLastMessageCount] = useState(0);
-  const [toastNotification, setToastNotification] = useState<string | null>(null);
-  const [toastType, setToastType] = useState<'message' | 'alert'>('message');
+  interface ToastItem {
+    id: string;
+    message: string;
+    type: 'message' | 'alert';
+  }
+
+  // 2. Change state to hold an ARRAY of toasts
+  const [toasts, setToasts] = useState<ToastItem[]>([]);
+
+  // 3. Create a helper function to safely add and auto-remove toasts
+  const addToast = useCallback((message: string, type: 'message' | 'alert') => {
+    setToasts(prev => {
+      // If this exact message is already showing, drop the duplicate!
+      if (prev.some(t => t.message === message)) return prev;
+
+      const id = Math.random().toString(36).substring(2, 9); 
+      return [{ id, message, type }, ...prev];
+    });
+  }, []);
+
   const [hasUnreadIndicator, setHasUnreadIndicator] = useState(false);
 
   const { 
@@ -57,8 +75,16 @@ export const App: React.FC = () => {
     cancelMatchRequest, incomingArtilleryPosition, sendArtilleryPosition, partnerSeat: matchedSeat, submitSurvey
   } = useSeatSyncSocket( isSeatSyncMatched, currentSeat);
 
-  const partnerSeat = matchedSeat || 'Searching...';
+  const lastKnownPartner = useRef<string>('Unknown');
+  const partnerSeat = matchedSeat || (hasPartnerLeft ? lastKnownPartner.current : 'Searching...');
   const isMyTurn = activeTurnSeat === currentSeat;
+
+  
+  useEffect(() => {
+    if (matchedSeat) {
+      lastKnownPartner.current = matchedSeat;
+    }
+  }, [matchedSeat]);
 
   useEffect(() => {
     if (matchRequestStatus === 'accepted' && !isSeatSyncMatched) {
@@ -70,11 +96,8 @@ export const App: React.FC = () => {
     if (isSeatSyncMatched && activeTab === 'media' && messages.length > lastMessageCount) {
       const newestMessage = messages[messages.length - 1];
       if (newestMessage && !newestMessage.sender.includes('You')) {
-        setToastNotification(`${newestMessage.sender}: "${newestMessage.text}"`);
-        setToastType('message');
+        addToast(`${newestMessage.sender}: "${newestMessage.text}"`, 'message');
         setHasUnreadIndicator(true);
-        const dismissTimer = setTimeout(() => setToastNotification(null), 4000);
-        return () => clearTimeout(dismissTimer);
       }
     }
     setLastMessageCount(messages.length);
@@ -82,16 +105,15 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     if (hasPartnerLeft && activeTab === 'media') {
-      setToastNotification(`Seat ${partnerSeat} has terminated the connection.`);
-      setToastType('alert');
+      addToast(`Seat ${lastKnownPartner.current} has terminated the connection.`, 'alert'); // <--- Reads memory box
       setHasUnreadIndicator(true);
     }
-  }, [hasPartnerLeft, activeTab, partnerSeat]);
+  }, [hasPartnerLeft, activeTab, addToast]);
 
   useEffect(() => {
     if (activeTab === 'social') {
       setHasUnreadIndicator(false);
-      setToastNotification(null); 
+      setToasts([]); // Clears all toasts in the array!
     }
   }, [activeTab]);
 
@@ -105,10 +127,9 @@ export const App: React.FC = () => {
       }
 
       if (partnerGameSession.action === 'quit') {
-        setToastNotification(`Seat ${partnerSeat} quit the ${partnerGameSession.game === 'draw' ? 'Canvas' : 'Artillery'} game.`);
-        setToastType('alert');
+        addToast(`Seat ${lastKnownPartner.current} quit the ${partnerGameSession.game === 'draw' ? 'Canvas' : 'Artillery'} game.`, 'alert'); // <--- Reads memory box
         setHasUnreadIndicator(true);
-        setQuitMessages(prev => ({ ...prev, [partnerGameSession.game]: `Seat ${partnerSeat} quit the game.` })); // <--- SET MESSAGE
+        setQuitMessages(prev => ({ ...prev, [partnerGameSession.game]: `Seat ${lastKnownPartner.current} quit the game.` })); // <--- Reads memory box
       }
     }
   }, [partnerGameSession, partnerSeat, resetGameState]);
@@ -150,10 +171,13 @@ export const App: React.FC = () => {
   };
 
   const handleQuitGame = (game: 'draw' | 'artillery') => {
+    // 1. Close the game UI locally
     setGameStates(prev => ({ ...prev, [game]: false }));
+    
+    // 2. Tell the backend to notify the partner
     sendGameSessionUpdate(game, 'quit'); 
-    setToastNotification(`You quit the ${game === 'draw' ? 'Canvas' : 'Artillery'} game.`);
-    setToastType('alert');
+    
+    // 3. Clear any local quit messages (No toast notifications here!)
     setQuitMessages(prev => ({ ...prev, [game]: null }));
   };
 
@@ -177,7 +201,6 @@ export const App: React.FC = () => {
               {/* NEW: DYNAMIC AI MATCH SCORE */}
               {incomingMatchRequest.score && (
                 <span style={{ display: 'block', marginTop: '0.8rem', color: 'var(--accent-cyan)', fontWeight: 'bold' }}>
-                  🧠 AI Match Score: {incomingMatchRequest.score}%
                 </span>
               )}
             </p>
@@ -223,29 +246,63 @@ export const App: React.FC = () => {
         </div>
       )}
 
-      {toastNotification && (
-        <div style={{
-          position: 'fixed', top: '5.5rem', right: '1.5rem',
-          background: toastType === 'alert' ? 'rgba(255, 10, 10, 0.9)' : 'rgba(10, 15, 26, 0.9)', 
-          backdropFilter: 'blur(12px)',
-          border: toastType === 'alert' ? '1px solid #ff4444' : '1px solid var(--accent-cyan)', 
-          borderRadius: '12px', padding: '1rem 1.5rem', zIndex: 99999, width: '320px',
-          boxShadow: toastType === 'alert' ? '0 10px 30px rgba(255, 0, 0, 0.3)' : '0 10px 30px rgba(0, 210, 255, 0.2)',
-          animation: 'slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
-          display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.5rem'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', cursor: 'pointer', overflow: 'hidden', flexGrow: 1 }} onClick={() => setActiveTab('social')}>
-            <span style={{ fontSize: '1.5rem' }}>{toastType === 'alert' ? '⚠️' : '💬'}</span>
-            <div style={{ overflow: 'hidden' }}>
-              <strong style={{ color: toastType === 'alert' ? '#ffcccc' : 'var(--accent-cyan)', fontSize: '0.75rem', display: 'block', letterSpacing: '1px', marginBottom: '0.2rem' }}>
-                {toastType === 'alert' ? 'CONNECTION UPDATE' : 'NEW COMMS LINK MESSAGE'}
-              </strong>
-              <p style={{ margin: 0, fontSize: '0.9rem', color: 'white', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{toastNotification}</p>
+      <style>{`
+        .toast-card {
+          transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+        }
+        .toast-card:hover {
+          transform: translateX(-5px);
+        }
+        .toast-text {
+          display: -webkit-box;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          max-height: 1.4em;
+          transition: max-height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .toast-card:hover .toast-text {
+          -webkit-line-clamp: 10;
+          max-height: 150px;
+        }
+      `}</style>
+
+      {/* The Stacking Toast Container */}
+      <div style={{ position: 'fixed', top: '5.5rem', right: '1.5rem', zIndex: 99999, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+        {toasts.map((toast) => (
+          <div key={toast.id} className="toast-card" style={{
+            background: toast.type === 'alert' ? 'rgba(255, 10, 10, 0.9)' : 'rgba(10, 15, 26, 0.9)', 
+            backdropFilter: 'blur(12px)',
+            border: toast.type === 'alert' ? '1px solid #ff4444' : '1px solid var(--accent-cyan)', 
+            borderRadius: '12px', padding: '1rem 1.5rem', width: '320px',
+            boxShadow: toast.type === 'alert' ? '0 10px 30px rgba(255, 0, 0, 0.3)' : '0 10px 30px rgba(0, 210, 255, 0.2)',
+            animation: 'slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+            display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.5rem',
+            cursor: 'pointer'
+          }} onClick={() => setActiveTab('social')}>
+            
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.85rem', overflow: 'hidden', flexGrow: 1 }}>
+              <span style={{ fontSize: '1.5rem', marginTop: '-2px' }}>{toast.type === 'alert' ? '⚠️' : '💬'}</span>
+              <div style={{ overflow: 'hidden', width: '100%' }}>
+                <strong style={{ color: toast.type === 'alert' ? '#ffcccc' : 'var(--accent-cyan)', fontSize: '0.75rem', display: 'block', letterSpacing: '1px', marginBottom: '0.4rem' }}>
+                  {toast.type === 'alert' ? 'CONNECTION UPDATE' : 'NEW COMMS LINK MESSAGE'}
+                </strong>
+                <p className="toast-text" style={{ margin: 0, fontSize: '0.9rem', color: 'white', lineHeight: '1.4em' }}>
+                  {toast.message}
+                </p>
+              </div>
             </div>
+
+            <button onClick={(e) => { 
+              e.stopPropagation(); 
+              setToasts(prev => prev.filter(t => t.id !== toast.id)); 
+            }} style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.6)', fontSize: '1.5rem', cursor: 'pointer', padding: 0, lineHeight: '1rem' }}>
+              ×
+            </button>
+            
           </div>
-          <button onClick={(e) => { e.stopPropagation(); setToastNotification(null); }} style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.6)', fontSize: '1.5rem', cursor: 'pointer', padding: 0, lineHeight: '1rem' }}>×</button>
-        </div>
-      )}
+        ))}
+      </div>
 
       <div 
         onClick={() => setIsRestMode(false)} 
@@ -312,7 +369,12 @@ export const App: React.FC = () => {
           >
             👋 Connect & Play
             {hasUnreadIndicator && (
-              <span style={{ width: '8px', height: '8px', background: toastType === 'alert' ? '#ff4444' : '#ff007f', borderRadius: '50%', display: 'block', boxShadow: `0 0 10px ${toastType === 'alert' ? '#ff4444' : '#ff007f'}` }} />
+              <span style={{ 
+                width: '8px', height: '8px', 
+                background: toasts.some(t => t.type === 'alert') ? '#ff4444' : '#ff007f', 
+                borderRadius: '50%', display: 'block', 
+                boxShadow: `0 0 10px ${toasts.some(t => t.type === 'alert') ? '#ff4444' : '#ff007f'}` 
+              }} />
             )}
           </button>
         </div>
@@ -348,7 +410,7 @@ export const App: React.FC = () => {
                 onDisconnect={() => {
                   terminateConnection();
                   setIsSeatSyncMatched(false);
-                  setToastNotification(null);
+                  setToasts([]);
                   setHasUnreadIndicator(false);
                 }} 
                 hasPartnerLeft={hasPartnerLeft}

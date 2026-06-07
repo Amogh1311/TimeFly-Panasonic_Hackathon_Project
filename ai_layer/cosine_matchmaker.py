@@ -4,7 +4,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 def calculate_match_score(survey_a, survey_b):
     # 1. Define the exact options for the questions we are comparing
     # This ensures "Business" is always at index 0, "Leisure" at 1, etc.
-    q1_options = ['Business / Corporate', 'Leisure / Vacation', 'Visiting Family & Friends', 'Event / Concert / Sports', 'Academic / Research', 'Relocation', 'Tourism / Backpacking', 'Other']
+    q1_options = ['Business / Corporate', 'Solo Leisure', 'Visiting Family & Friends', 'Event / Concert / Sports', 'Academic / Research', 'Relocation', 'Tourism / Backpacking', 'Other']
     q3_options = ['Talkative & Social', 'Quiet & Relaxed', 'Gamer / Interactive', 'Collaborator / Networking', 'Movie-Binger', 'Bookworm', 'Sleeper']
 
     def vectorize(survey):

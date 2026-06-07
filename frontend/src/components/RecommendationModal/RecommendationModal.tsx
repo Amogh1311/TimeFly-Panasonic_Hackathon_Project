@@ -46,7 +46,15 @@ export const RecommendationModal: React.FC<Props> = ({ isOpen, onClose, payload 
         <div className={styles.recommendationGrid}>
           {payload.items.map((item) => (
             <div key={item.id} className={styles.itemCard}>
-              <img src={item.thumbnail_url} alt={item.title} className={styles.itemImage} />
+              
+              {/* NEW: Image Wrapper for the Hover Overlay */}
+              <div className={styles.imageWrapper}>
+                <img src={item.thumbnail_url} alt={item.title} className={styles.itemImage} />
+                <div className={styles.playOverlay}>
+                  <button className={styles.playButton}>▶ Play</button>
+                </div>
+              </div>
+
               <div className={styles.itemDetails}>
                 <span className={styles.itemType}>{item.media_type}</span>
                 <h4 className={styles.itemTitle}>{item.title}</h4>

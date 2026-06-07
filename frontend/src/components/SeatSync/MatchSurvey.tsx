@@ -17,7 +17,7 @@ interface Props {
 }
 
 const QUESTIONS = [
-  { id: 'q1', label: '1. Primary reason for travel?', options: ['Business / Corporate', 'Leisure / Vacation', 'Visiting Family & Friends', 'Event / Concert / Sports', 'Academic / Research', 'Relocation', 'Tourism / Backpacking', 'Other'] },
+  { id: 'q1', label: '1. Primary reason for travel?', options: ['Business / Corporate', 'Solo Leisure', 'Visiting Family & Friends', 'Event / Concert / Sports', 'Academic / Research', 'Relocation', 'Tourism / Backpacking', 'Other'] },
   { id: 'q2', label: '2. Favorite media genre?', options: ['Action & Sci-Fi', 'Comedy & Sitcoms', 'Documentaries & Nature', 'Horror & Thriller', 'Romance & Drama', 'Anime & Animation', 'K-Drama', 'Music & Concerts', 'True Crime'] },
   { id: 'q3', label: '3. Ideal flight vibe?', options: ['Talkative & Social', 'Quiet & Relaxed', 'Gamer / Interactive', 'Collaborator / Networking', 'Movie-Binger', 'Bookworm', 'Sleeper'] },
   { id: 'q4', label: '4. Beverage of choice?', options: ['Black Coffee', 'Latte / Cappuccino', 'Green / Herbal Tea', 'Water (Stay Hydrated)', 'Cola / Soda', 'Fruit Juice', 'Beer / Wine', 'Cocktails / Spirits', 'Sparkling Water'] },

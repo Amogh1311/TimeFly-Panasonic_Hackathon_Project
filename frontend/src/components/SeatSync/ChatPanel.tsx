@@ -39,7 +39,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ messages = [], onSendMessa
         </div>
         <div>
           <h3>Chat with the Buddy</h3>
-          <p className={styles.subStatus}>Encrypted • Peer-to-Peer</p>
+          <p className={styles.subStatus}>Your chats will only be visible to your buddy and will be be lost if connection gets terminated</p>
         </div>
       </div>
 
@@ -47,7 +47,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ messages = [], onSendMessa
         {messages.length === 0 ? (
           <div className={styles.emptyState}>
             <span className={styles.emptyIcon}>💬</span>
-            <p>Connection established.<br/>Say hi to your neighbor!</p>
+            <p>Connection established.<br/>Say hi to your Buddy!</p>
           </div>
         ) : (
           messages.map((msg) => {
