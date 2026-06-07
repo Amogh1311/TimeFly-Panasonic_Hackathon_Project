@@ -3,6 +3,8 @@ import styles from './ArtilleryGame.module.css';
 
 export interface ArtilleryGameProps {
   playerSeat: string;
+  partnerSeat: string;
+  gameInitiator: string | null;
   isMyTurn: boolean;
   incomingMove?: { angle: number; power: number; nextObstacle: number } | null;
   onSendMove?: (move: { angle: number; power: number; nextObstacle: number }) => void;
@@ -14,7 +16,7 @@ export interface ArtilleryGameProps {
 }
 
 export const ArtilleryGame: React.FC<ArtilleryGameProps> = ({ 
-  playerSeat, isMyTurn, incomingMove, onSendMove, incomingPosition, onSendPosition, onTurnEnd, isActive, onQuit 
+  playerSeat,partnerSeat,gameInitiator, isMyTurn, incomingMove, onSendMove, incomingPosition, onSendPosition, onTurnEnd, isActive, onQuit 
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
@@ -31,13 +33,19 @@ export const ArtilleryGame: React.FC<ArtilleryGameProps> = ({
   // Dynamic Obstacle (Randomized height between 50 and 150)
   const [obstacleHeight, setObstacleHeight] = useState(100);
 
-  // Listen for opponent's movement
+  // 🛑 NEW: Deterministic Player Assignment (Alphabetical Sort)
+  const p1Seat = gameInitiator || playerSeat;
+  const p2Seat = p1Seat === playerSeat ? partnerSeat : playerSeat;
+  const amIP1 = playerSeat === p1Seat;
+  const themeColor = amIP1 ? 'var(--accent-cyan)' : '#ff007f';
+
+  // Listen for opponent's movement dynamically
   useEffect(() => {
     if (incomingPosition) {
-      if (incomingPosition.seat === '12A') setP1X(incomingPosition.x);
-      if (incomingPosition.seat === '14B') setP2X(incomingPosition.x);
+      if (incomingPosition.seat === p1Seat) setP1X(incomingPosition.x);
+      if (incomingPosition.seat === p2Seat) setP2X(incomingPosition.x);
     }
-  }, [incomingPosition]);
+  }, [incomingPosition, p1Seat, p2Seat]);
 
   // Reset game state when a new session starts
   useEffect(() => {
@@ -123,7 +131,7 @@ export const ArtilleryGame: React.FC<ArtilleryGameProps> = ({
     const rad = (shotAngle * Math.PI) / 180;
     
     // Determine who is actually shooting based on the seat
-    const amIP1 = playerSeat === '12A';
+
     const shooterIsP1 = isOpponent ? !amIP1 : amIP1;
 
     // Physics variables (Start from dynamic X positions)
@@ -203,7 +211,6 @@ export const ArtilleryGame: React.FC<ArtilleryGameProps> = ({
     if (isAnimating || !isMyTurn) return;
 
     const step = 20; // Move 20px per click
-    const amIP1 = playerSeat === '12A';
     let newX = amIP1 ? p1X : p2X;
 
     if (direction === 'left') newX -= step;
@@ -236,27 +243,26 @@ export const ArtilleryGame: React.FC<ArtilleryGameProps> = ({
       }
     }, 1500);
   };
-
-  const themeColor = playerSeat === '12A' ? 'var(--accent-cyan)' : '#ff007f';
-
   return (
     <div className={styles.gameWrapper}>
       <div className={styles.header}>
         <h4 className={styles.title}>🎯 Neon Artillery</h4>
         <div className={styles.scoreBoard}>
           
+          {/* Player 1 / Left Side (Cyan) */}
           <div className={styles.healthDisplay}>
-            <span style={{ fontSize: '0.7rem', color: 'var(--accent-cyan)' }}>
-              {playerSeat === '12A' ? 'YOU (12A)' : '12A'}
+            <span style={{ fontSize: '0.7rem', color: 'var(--accent-cyan)', fontWeight: 'bold' }}>
+              {p1Seat === playerSeat ? `Seat ${p1Seat} (You)` : `Seat ${p1Seat}`}
             </span>
             <div className={styles.healthBar}>
               <div className={`${styles.healthFill} ${styles.p1Fill}`} style={{ width: `${(p1Health / 10) * 100}%` }} />
             </div>
           </div>
 
+          {/* Player 2 / Right Side (Pink) */}
           <div className={styles.healthDisplay}>
-            <span style={{ fontSize: '0.7rem', color: '#ff007f' }}>
-              {playerSeat === '14B' ? 'YOU (14B)' : '14B'}
+            <span style={{ fontSize: '0.7rem', color: '#ff007f', fontWeight: 'bold' }}>
+              {p2Seat === playerSeat ? `Seat ${p2Seat} (You)` : `Seat ${p2Seat}`}
             </span>
             <div className={styles.healthBar}>
               <div className={`${styles.healthFill} ${styles.p2Fill}`} style={{ width: `${(p2Health / 10) * 100}%` }} />
@@ -288,7 +294,7 @@ export const ArtilleryGame: React.FC<ArtilleryGameProps> = ({
             }}
             onMouseOver={(e) => { 
               if (!isAnimating && isMyTurn) {
-                e.currentTarget.style.background = playerSeat === '12A' ? 'rgba(0, 210, 255, 0.15)' : 'rgba(255, 0, 127, 0.15)';
+                e.currentTarget.style.background = amIP1 ? 'rgba(0, 210, 255, 0.15)' : 'rgba(255, 0, 127, 0.15)';
                 e.currentTarget.style.transform = 'translateY(-2px)';
               }
             }}
@@ -311,7 +317,7 @@ export const ArtilleryGame: React.FC<ArtilleryGameProps> = ({
             }}
             onMouseOver={(e) => { 
               if (!isAnimating && isMyTurn) {
-                e.currentTarget.style.background = playerSeat === '12A' ? 'rgba(0, 210, 255, 0.15)' : 'rgba(255, 0, 127, 0.15)';
+                e.currentTarget.style.background = amIP1 ? 'rgba(0, 210, 255, 0.15)' : 'rgba(255, 0, 127, 0.15)';
                 e.currentTarget.style.transform = 'translateY(-2px)';
               }
             }}

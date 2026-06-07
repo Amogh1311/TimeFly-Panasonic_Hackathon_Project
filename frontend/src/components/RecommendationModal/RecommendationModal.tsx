@@ -70,10 +70,6 @@ export const RecommendationModal: React.FC<Props> = ({ isOpen, onClose, payload 
           ))}
         </div>
 
-        <button className={styles.applyButton} onClick={onClose}>
-          Apply Preferences
-        </button>
-
       </div>
     </div>
   );

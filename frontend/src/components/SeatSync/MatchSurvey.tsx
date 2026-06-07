@@ -216,6 +216,16 @@ export const MatchSurvey: React.FC<Props> = ({
                 fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s',
                 boxShadow: '0 4px 15px rgba(255, 68, 68, 0.3)'
               }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = '#e60000';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(255, 68, 68, 0.5)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = '#ff4444';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 15px rgba(255, 68, 68, 0.3)';
+              }}
             >
               Terminate Connection
             </button>

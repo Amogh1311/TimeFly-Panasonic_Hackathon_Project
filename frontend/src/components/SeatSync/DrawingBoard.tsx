@@ -5,6 +5,9 @@ interface DrawPoint { x: number; y: number; prevX: number; prevY: number; color:
 interface GameGuess { id: string; sender: string; text: string; }
 
 interface DrawingBoardProps {
+  playerSeat: string;
+  partnerSeat: string;
+  gameInitiator: string | null;
   incomingStroke?: DrawPoint | null;
   onDrawStroke?: (point: DrawPoint) => void;
   guesses?: GameGuess[];
@@ -20,6 +23,7 @@ interface DrawingBoardProps {
 const NEON_COLORS = ['#00d2ff', '#ff007f', '#00ff66', '#ffea00', '#ffffff'];
 
 export const DrawingBoard: React.FC<DrawingBoardProps> = ({ 
+  playerSeat, partnerSeat,gameInitiator,
   incomingStroke, onDrawStroke, guesses = [], onSendGuess, isMyTurn, onPassTurn, isActive, onQuit , incomingClear, onClearBoard
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -27,7 +31,18 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({
   const [isDrawing, setIsDrawing] = useState(false);
   const [color, setColor] = useState(NEON_COLORS[0]);
   const [guessInput, setGuessInput] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
   const lastPos = useRef({ x: 0, y: 0 });
+
+  const p1Seat = gameInitiator || playerSeat;
+  const amIP1 = playerSeat === p1Seat;
+  
+  const myThemeColor = amIP1 ? 'var(--accent-cyan)' : '#ff007f';
+  const myBgColor = amIP1 ? 'rgba(0, 210, 255, 0.2)' : 'rgba(255, 0, 127, 0.2)';
+  const partnerThemeColor = amIP1 ? '#ff007f' : 'var(--accent-cyan)';
+  
+  const activeTurnColor = isMyTurn ? myThemeColor : partnerThemeColor;
+  const activeBgColor = activeTurnColor === 'var(--accent-cyan)' ? 'rgba(0, 210, 255, 0.2)' : 'rgba(255, 0, 127, 0.2)';
 
   const clearBoard = () => {
     if (!isMyTurn) return; 
@@ -133,8 +148,8 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({
       <div className={styles.controlHeader}>
         <div className={styles.titleGroup}>
           <h4>Co-op Pictionary</h4>
-          <span className={styles.liveTag} style={{ background: isMyTurn ? 'rgba(0, 210, 255, 0.2)' : 'rgba(255, 0, 127, 0.2)', color: isMyTurn ? 'var(--accent-cyan)' : '#ff007f' }}>
-            {isMyTurn ? "YOUR TURN" : "WAITING..."}
+          <span className={styles.liveTag} style={{ background: myBgColor, color: myThemeColor }}>
+            {isMyTurn ? "DRAW" : "WAITING..."}
           </span>
         </div>
         
@@ -175,9 +190,20 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({
             className={styles.clearBtn} 
             onClick={onPassTurn} 
             disabled={!isMyTurn} 
-            style={{ marginLeft: '10px', background: 'rgba(0, 210, 255, 0.2)', color: 'var(--accent-cyan)' }}
+            style={{ 
+              marginLeft: '10px', 
+              background: myBgColor, 
+              color: myThemeColor,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '0.4rem 0.6rem',
+              minWidth: '90px' /* 🛑 Locks the exact width! */
+            }}
           >
-            ⏭ Pass Turn
+            <span style={{ fontSize: '1.1rem', marginBottom: '2px' }}>⏭</span>
+            <span style={{ fontSize: '0.7rem', whiteSpace: 'nowrap', fontWeight: 'bold' }}>Pass Turn</span>
           </button>
         </div>
       </div>
@@ -207,14 +233,27 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({
       <div className={styles.gameSection}>
         <div className={styles.guessList}>
           {guesses.length === 0 ? (
-            <div className={styles.emptyGame}>Start drawing! The other passenger will guess here.</div>
+            <div className={styles.emptyGame}>
+              {isMyTurn 
+                ? "Start drawing! The other passenger will guess here." 
+                : "Watch closely! Type your guess below..."}
+            </div>
           ) : (
-            guesses.map(g => (
-              <div key={g.id} className={styles.guessRow}>
-                <span className={styles.guesserName}>{g.sender}:</span>
-                <span className={styles.guessText}>{g.text}</span>
-              </div>
-            ))
+            guesses.map(g => {
+              
+              // 🛑 THE FIX: g.sender looks like "Seat 12A". We simply check if it contains the Blue player's seat!
+              const isP1Sender = g.sender.includes(p1Seat);
+              
+              // If it has P1's seat number, it's Cyan. If not, it's Pink!
+              const guessColor = isP1Sender ? 'var(--accent-cyan)' : '#ff007f';
+              
+              return (
+                <div key={g.id} className={styles.guessRow}>
+                  <span className={styles.guesserName} style={{ color: guessColor, fontWeight: 'bold' }}>{g.sender}:</span>
+                  <span className={styles.guessText} style={{ color: guessColor }}>{g.text}</span>
+                </div>
+              );
+            })
           )}
           <div ref={guessesEndRef} />
         </div>
@@ -227,11 +266,38 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({
             onChange={(e) => setGuessInput(e.target.value)}
             className={styles.guessInput}
             disabled={isMyTurn}
+            onFocus={() => setIsFocused(true)}   /* 🛑 NEW: Triggers glow */
+            onBlur={() => setIsFocused(false)}   /* 🛑 NEW: Removes glow */
+            style={isFocused ? {                 /* 🛑 NEW: Dynamic styling */
+              outline: 'none',
+              border: `1px solid ${myThemeColor}`,
+              boxShadow: `0 0 15px ${myThemeColor}`
+            } : { transition: 'all 0.2s ease' }}
           />
           <button 
             type="submit" 
             className={styles.guessBtn} 
             disabled={!guessInput.trim() || isMyTurn}
+            style={{
+              background: (!guessInput.trim() || isMyTurn) ? 'transparent' : myThemeColor,
+              color: (!guessInput.trim() || isMyTurn) ? 'var(--text-secondary)' : '#000',
+              border: (!guessInput.trim() || isMyTurn) ? '1px solid var(--text-secondary)' : 'none',
+              boxShadow: (!guessInput.trim() || isMyTurn) ? 'none' : `0 0 10px ${myThemeColor}`,
+              transition: 'all 0.2s ease',
+              cursor: (!guessInput.trim() || isMyTurn) ? 'not-allowed' : 'pointer'
+            }}
+            onMouseOver={(e) => {
+              if (guessInput.trim() && !isMyTurn) {
+                e.currentTarget.style.transform = 'scale(1.05)';
+                e.currentTarget.style.boxShadow = `0 0 20px ${myThemeColor}`;
+              }
+            }}
+            onMouseOut={(e) => {
+              if (guessInput.trim() && !isMyTurn) {
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.boxShadow = `0 0 10px ${myThemeColor}`;
+              }
+            }}
           >
             Guess
           </button>

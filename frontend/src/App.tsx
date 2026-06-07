@@ -9,6 +9,7 @@ import { MatchSurvey } from './components/SeatSync/MatchSurvey';
 import { ChatPanel } from './components/SeatSync/ChatPanel';
 import { DrawingBoard } from './components/SeatSync/DrawingBoard';
 import { ArtilleryGame } from './components/SeatSync/ArtilleryGame';
+import { SystemCompanion } from './components/SeatSync/SystemCompanion';
 import { useSeatSyncSocket } from './hooks/useSeatSyncSocket';
 
 export interface FlightTelemetry {
@@ -36,6 +37,7 @@ export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'media' | 'social'>('media');
   const [activeGame, setActiveGame] = useState<'draw' | 'artillery'>('draw');
   const [gameStates, setGameStates] = useState({ draw: false, artillery: false });
+  const [gameInitiator, setGameInitiator] = useState<string | null>(null);
   const [quitMessages, setQuitMessages] = useState<{draw: string | null, artillery: string | null}>({ draw: null, artillery: null });
   
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -87,6 +89,14 @@ export const App: React.FC = () => {
   }, [matchedSeat]);
 
   useEffect(() => {
+    if (!isSeatSyncMatched || hasPartnerLeft) {
+      setGameStates({ draw: false, artillery: false });
+      setQuitMessages({ draw: null, artillery: null });
+      setGameInitiator(null); // 🛑 NEW: Wipe the host state on disconnect
+    }
+  }, [isSeatSyncMatched, hasPartnerLeft]);
+
+  useEffect(() => {
     if (matchRequestStatus === 'accepted' && !isSeatSyncMatched) {
       setIsSeatSyncMatched(true);
     }
@@ -122,6 +132,7 @@ export const App: React.FC = () => {
       setGameStates(prev => ({ ...prev, [partnerGameSession.game]: partnerGameSession.action === 'start' }));
       
       if (partnerGameSession.action === 'start') {
+        setGameInitiator(lastKnownPartner.current); // 🛑 NEW: Partner clicked "Play"
         resetGameState(); 
         setQuitMessages(prev => ({ ...prev, [partnerGameSession.game]: null })); // <--- CLEAR MESSAGE
       }
@@ -166,6 +177,7 @@ export const App: React.FC = () => {
 
   const handleStartGame = (game: 'draw' | 'artillery') => {
     setGameStates(prev => ({ ...prev, [game]: true }));
+    setGameInitiator(currentSeat); // 🛑 NEW: You clicked "Play"
     sendGameSessionUpdate(game, 'start'); 
     resetGameState(); 
   };
@@ -397,28 +409,32 @@ export const App: React.FC = () => {
             <DashboardGrid telemetry={telemetry} />
           </div>
 
-          <div style={{ display: activeTab === 'social' ? 'flex' : 'none', gap: '1.5rem', height: '100%' }}>
-            <div style={{ flex: 1, minWidth: '350px' }}>
-              <MatchSurvey 
-                isMatched={isSeatSyncMatched}
-                partnerSeat={partnerSeat}
-                matchRequestStatus={matchRequestStatus}
-                onSubmitProfile={submitSurvey}
-                onSendMatchRequest={sendMatchRequest}
-                onCancelRequest={cancelMatchRequest}
-                onEditStart={() => setIsSeatSyncMatched(false)} 
-                onDisconnect={() => {
-                  terminateConnection();
-                  setIsSeatSyncMatched(false);
-                  setToasts([]);
-                  setHasUnreadIndicator(false);
-                }} 
-                hasPartnerLeft={hasPartnerLeft}
-                onAcknowledgeDisconnect={() => setIsSeatSyncMatched(false)}
-              />
-            </div>
-            
-            {isSeatSyncMatched && !hasPartnerLeft && (
+<div style={{ display: activeTab === 'social' ? 'flex' : 'none', gap: '1.5rem', height: '100%' }}>
+              <div style={{ flex: 1, minWidth: '350px' }}>
+                <MatchSurvey 
+                  isMatched={isSeatSyncMatched}
+                  partnerSeat={partnerSeat}
+                  matchRequestStatus={matchRequestStatus}
+                  onSubmitProfile={submitSurvey}
+                  onSendMatchRequest={sendMatchRequest}
+                  onCancelRequest={cancelMatchRequest}
+                  onEditStart={() => setIsSeatSyncMatched(false)} 
+                  onDisconnect={() => {
+                    terminateConnection();
+                    setIsSeatSyncMatched(false);
+                    setToasts([]);
+                    setHasUnreadIndicator(false);
+                  }} 
+                  hasPartnerLeft={hasPartnerLeft}
+                  onAcknowledgeDisconnect={() => setIsSeatSyncMatched(false)}
+                />
+              </div>
+              
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <SystemCompanion isMatched={isSeatSyncMatched} partnerSeat={partnerSeat} />
+              </div>
+              
+              {isSeatSyncMatched && !hasPartnerLeft && (
                 <div style={{ flex: 2, display: 'flex', flexDirection: 'column', gap: '1.5rem', animation: 'fadeIn 0.5s ease-out', height: '100%', minHeight: 0 }}>
                 <div style={{ flex: 2, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
                   <ChatPanel messages={messages} onSendMessage={sendMessage} />
@@ -466,8 +482,11 @@ export const App: React.FC = () => {
                       pointerEvents: gameStates[activeGame] ? 'auto' : 'none', 
                       transition: 'all 0.4s ease-in-out' 
                     }}>
-                      {activeGame === 'draw' ? (
+                      <div style={{ display: activeGame === 'draw' ? 'block' : 'none', height: '100%' }}>
                         <DrawingBoard 
+                          playerSeat={currentSeat}
+                          partnerSeat={partnerSeat}
+                          gameInitiator={gameInitiator}
                           incomingStroke={incomingDrawPoint} 
                           onDrawStroke={sendDrawStroke} 
                           guesses={gameGuesses}
@@ -475,13 +494,17 @@ export const App: React.FC = () => {
                           isMyTurn={isMyTurn}
                           onPassTurn={passTurn} 
                           isActive={gameStates.draw} 
-                          onQuit={() => handleQuitGame('draw')} // <--- NEW: Passed down!
+                          onQuit={() => handleQuitGame('draw')} 
                           incomingClear={incomingClear}
                           onClearBoard={sendClearBoard}
                         />
-                      ) : (
+                      </div>
+
+                      <div style={{ display: activeGame === 'artillery' ? 'block' : 'none', height: '100%' }}>
                         <ArtilleryGame 
                           playerSeat={currentSeat} 
+                          partnerSeat={partnerSeat}
+                          gameInitiator={gameInitiator}
                           isMyTurn={isMyTurn}
                           incomingMove={incomingArtilleryMove}
                           onSendMove={sendArtilleryMove}
@@ -489,9 +512,9 @@ export const App: React.FC = () => {
                           onSendPosition={sendArtilleryPosition}
                           onTurnEnd={passTurn}
                           isActive={gameStates.artillery} 
-                          onQuit={() => handleQuitGame('artillery')} // <--- NEW: Passed down!
+                          onQuit={() => handleQuitGame('artillery')} 
                         />
-                      )}
+                      </div>
                     </div>
 
                     {!gameStates[activeGame] && (
@@ -530,36 +553,7 @@ export const App: React.FC = () => {
         </section>
 
         <aside className={styles.sidebarSection}>
-          <FlightSimulatorControls telemetry={telemetry} setTelemetry={setTelemetry} />
-          
-          <button 
-            style={{ 
-              marginTop: '1.5rem', 
-              padding: '1rem', 
-              background: 'var(--accent-cyan)', 
-              color: '#000', 
-              fontWeight: 'bold', 
-              border: 'none', 
-              borderRadius: '8px', 
-              cursor: 'pointer', 
-              width: '100%',
-              transition: 'all 0.2s ease',
-              boxShadow: '0 4px 15px rgba(0, 210, 255, 0.2)' 
-            }} 
-            onClick={triggerAI}
-            onMouseOver={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 210, 255, 0.4)';
-              e.currentTarget.style.filter = 'brightness(1.1)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 210, 255, 0.2)';
-              e.currentTarget.style.filter = 'brightness(1)';
-            }}
-          >
-            Best Recommendations
-          </button>
+          <FlightSimulatorControls telemetry={telemetry} setTelemetry={setTelemetry} onTriggerAI={triggerAI} />
         </aside>
       </main>
 
