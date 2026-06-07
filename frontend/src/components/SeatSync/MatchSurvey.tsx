@@ -205,7 +205,16 @@ export const MatchSurvey: React.FC<Props> = ({
           <div className={styles.matchBadge}>AI Linked Link</div>
           <h2 className={styles.matchTitle}>Connected with Seat {partnerSeat}</h2>
           <div className={styles.actionButtons}>
-            <button className={styles.secondaryButton} onClick={handleEdit}>
+            <button 
+              className={styles.secondaryButton} 
+              onClick={handleEdit}
+              disabled={isMatched}
+              style={{ 
+                opacity: isMatched ? 0.5 : 1, 
+                cursor: isMatched ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s'
+              }}
+            >
               ✏️ Edit Preferences
             </button>
             <button 
