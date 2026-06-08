@@ -1,0 +1,1001 @@
+Weather,FlightPhase,PassengerProfile,TargetVibe
+Night Flight,Cruising,Parent with Child,Family Entertainment
+Clear Skies,Landing,Parent with Child,Family Entertainment
+Night Flight,Cruising,Student,Sleep & Relax
+Light Rain,Cruising,Student,Casual Entertainment
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Light Rain,Landing,Parent with Child,Family Entertainment
+Clear Skies,Landing,Student,Casual Entertainment
+Light Rain,Takeoff,Solo Leisure,Casual Entertainment
+Light Rain,Takeoff,Student,Casual Entertainment
+Night Flight,Takeoff,Solo Leisure,Sleep & Relax
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Night Flight,Takeoff,Business Traveler,Sleep & Relax
+Light Rain,Cruising,Parent with Child,Family Entertainment
+Light Rain,Landing,Student,Casual Entertainment
+Light Rain,Takeoff,Parent with Child,Family Entertainment
+Clear Skies,Takeoff,Parent with Child,Family Entertainment
+Night Flight,Landing,Student,Sleep & Relax
+Heavy Turbulence,Takeoff,Business Traveler,Calming Distraction
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Clear Skies,Takeoff,Student,Casual Entertainment
+Heavy Turbulence,Landing,Solo Leisure,Calming Distraction
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Takeoff,Business Traveler,Calming Distraction
+Night Flight,Cruising,Parent with Child,Family Entertainment
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Heavy Turbulence,Cruising,Business Traveler,Calming Distraction
+Light Rain,Takeoff,Solo Leisure,Casual Entertainment
+Light Rain,Takeoff,Parent with Child,Family Entertainment
+Light Rain,Landing,Business Traveler,Casual Entertainment
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Clear Skies,Landing,Parent with Child,Family Entertainment
+Light Rain,Cruising,Student,Casual Entertainment
+Night Flight,Landing,Parent with Child,Family Entertainment
+Light Rain,Cruising,Solo Leisure,Casual Entertainment
+Clear Skies,Landing,Parent with Child,Family Entertainment
+Light Rain,Takeoff,Student,Casual Entertainment
+Clear Skies,Takeoff,Solo Leisure,Casual Entertainment
+Clear Skies,Landing,Parent with Child,Family Entertainment
+Night Flight,Landing,Solo Leisure,Sleep & Relax
+Light Rain,Landing,Student,Casual Entertainment
+Night Flight,Landing,Business Traveler,Sleep & Relax
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Night Flight,Landing,Business Traveler,Sleep & Relax
+Light Rain,Cruising,Student,Casual Entertainment
+Heavy Turbulence,Takeoff,Parent with Child,Calming Distraction
+Heavy Turbulence,Landing,Solo Leisure,Calming Distraction
+Light Rain,Landing,Student,Casual Entertainment
+Night Flight,Takeoff,Solo Leisure,Sleep & Relax
+Night Flight,Landing,Parent with Child,Family Entertainment
+Light Rain,Cruising,Solo Leisure,Casual Entertainment
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Cruising,Parent with Child,Calming Distraction
+Clear Skies,Takeoff,Parent with Child,Family Entertainment
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Heavy Turbulence,Cruising,Student,Calming Distraction
+Clear Skies,Landing,Parent with Child,Family Entertainment
+Heavy Turbulence,Takeoff,Student,Calming Distraction
+Light Rain,Landing,Student,Casual Entertainment
+Night Flight,Cruising,Business Traveler,Productive & Focus
+Clear Skies,Takeoff,Student,Casual Entertainment
+Clear Skies,Takeoff,Student,Casual Entertainment
+Heavy Turbulence,Landing,Student,Calming Distraction
+Clear Skies,Landing,Parent with Child,Family Entertainment
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Light Rain,Landing,Parent with Child,Family Entertainment
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Night Flight,Takeoff,Solo Leisure,Sleep & Relax
+Night Flight,Cruising,Business Traveler,Productive & Focus
+Heavy Turbulence,Cruising,Student,Calming Distraction
+Night Flight,Takeoff,Business Traveler,Sleep & Relax
+Heavy Turbulence,Takeoff,Parent with Child,Calming Distraction
+Light Rain,Takeoff,Parent with Child,Family Entertainment
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Night Flight,Cruising,Student,Sleep & Relax
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Night Flight,Takeoff,Solo Leisure,Sleep & Relax
+Clear Skies,Landing,Student,Casual Entertainment
+Clear Skies,Takeoff,Student,Casual Entertainment
+Light Rain,Landing,Parent with Child,Family Entertainment
+Night Flight,Landing,Solo Leisure,Sleep & Relax
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Heavy Turbulence,Cruising,Business Traveler,Calming Distraction
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Night Flight,Landing,Solo Leisure,Sleep & Relax
+Night Flight,Cruising,Student,Sleep & Relax
+Light Rain,Landing,Business Traveler,Casual Entertainment
+Light Rain,Cruising,Business Traveler,Productive & Focus
+Night Flight,Landing,Student,Sleep & Relax
+Light Rain,Cruising,Business Traveler,Productive & Focus
+Clear Skies,Cruising,Student,Casual Entertainment
+Clear Skies,Cruising,Parent with Child,Family Entertainment
+Night Flight,Landing,Business Traveler,Sleep & Relax
+Clear Skies,Cruising,Parent with Child,Family Entertainment
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Takeoff,Student,Calming Distraction
+Light Rain,Cruising,Student,Casual Entertainment
+Light Rain,Landing,Student,Casual Entertainment
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Light Rain,Takeoff,Student,Casual Entertainment
+Night Flight,Cruising,Business Traveler,Productive & Focus
+Heavy Turbulence,Cruising,Student,Calming Distraction
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Night Flight,Landing,Parent with Child,Family Entertainment
+Heavy Turbulence,Cruising,Parent with Child,Calming Distraction
+Night Flight,Takeoff,Business Traveler,Sleep & Relax
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Night Flight,Cruising,Business Traveler,Productive & Focus
+Light Rain,Cruising,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Landing,Solo Leisure,Calming Distraction
+Night Flight,Takeoff,Parent with Child,Family Entertainment
+Heavy Turbulence,Landing,Parent with Child,Calming Distraction
+Heavy Turbulence,Cruising,Student,Calming Distraction
+Clear Skies,Takeoff,Parent with Child,Family Entertainment
+Night Flight,Landing,Business Traveler,Sleep & Relax
+Light Rain,Landing,Student,Casual Entertainment
+Heavy Turbulence,Cruising,Student,Calming Distraction
+Light Rain,Landing,Student,Casual Entertainment
+Clear Skies,Landing,Business Traveler,Casual Entertainment
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Clear Skies,Cruising,Student,Casual Entertainment
+Light Rain,Landing,Parent with Child,Family Entertainment
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Light Rain,Landing,Student,Casual Entertainment
+Light Rain,Landing,Student,Casual Entertainment
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Takeoff,Business Traveler,Calming Distraction
+Clear Skies,Cruising,Parent with Child,Family Entertainment
+Clear Skies,Cruising,Student,Casual Entertainment
+Light Rain,Cruising,Business Traveler,Productive & Focus
+Heavy Turbulence,Takeoff,Parent with Child,Calming Distraction
+Clear Skies,Landing,Business Traveler,Casual Entertainment
+Heavy Turbulence,Cruising,Business Traveler,Calming Distraction
+Heavy Turbulence,Landing,Student,Calming Distraction
+Heavy Turbulence,Takeoff,Business Traveler,Calming Distraction
+Heavy Turbulence,Takeoff,Parent with Child,Calming Distraction
+Night Flight,Cruising,Business Traveler,Productive & Focus
+Clear Skies,Landing,Parent with Child,Family Entertainment
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Night Flight,Cruising,Student,Sleep & Relax
+Light Rain,Takeoff,Student,Casual Entertainment
+Light Rain,Cruising,Solo Leisure,Casual Entertainment
+Light Rain,Cruising,Student,Casual Entertainment
+Heavy Turbulence,Takeoff,Business Traveler,Calming Distraction
+Light Rain,Takeoff,Solo Leisure,Casual Entertainment
+Clear Skies,Landing,Student,Casual Entertainment
+Night Flight,Landing,Parent with Child,Family Entertainment
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Night Flight,Takeoff,Student,Sleep & Relax
+Heavy Turbulence,Takeoff,Parent with Child,Calming Distraction
+Clear Skies,Cruising,Student,Casual Entertainment
+Clear Skies,Landing,Parent with Child,Family Entertainment
+Heavy Turbulence,Takeoff,Business Traveler,Calming Distraction
+Clear Skies,Takeoff,Student,Casual Entertainment
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Heavy Turbulence,Takeoff,Parent with Child,Calming Distraction
+Heavy Turbulence,Takeoff,Student,Calming Distraction
+Light Rain,Takeoff,Solo Leisure,Casual Entertainment
+Light Rain,Cruising,Solo Leisure,Casual Entertainment
+Light Rain,Landing,Parent with Child,Family Entertainment
+Light Rain,Cruising,Solo Leisure,Casual Entertainment
+Light Rain,Landing,Business Traveler,Casual Entertainment
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Clear Skies,Cruising,Student,Casual Entertainment
+Heavy Turbulence,Takeoff,Parent with Child,Calming Distraction
+Heavy Turbulence,Landing,Student,Calming Distraction
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Night Flight,Cruising,Student,Sleep & Relax
+Night Flight,Takeoff,Parent with Child,Family Entertainment
+Heavy Turbulence,Takeoff,Student,Calming Distraction
+Heavy Turbulence,Cruising,Student,Calming Distraction
+Clear Skies,Cruising,Student,Casual Entertainment
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Night Flight,Takeoff,Student,Sleep & Relax
+Clear Skies,Cruising,Student,Casual Entertainment
+Clear Skies,Landing,Parent with Child,Family Entertainment
+Clear Skies,Takeoff,Solo Leisure,Casual Entertainment
+Light Rain,Cruising,Parent with Child,Family Entertainment
+Heavy Turbulence,Takeoff,Business Traveler,Calming Distraction
+Light Rain,Takeoff,Solo Leisure,Casual Entertainment
+Night Flight,Cruising,Business Traveler,Productive & Focus
+Light Rain,Takeoff,Business Traveler,Casual Entertainment
+Heavy Turbulence,Takeoff,Solo Leisure,Calming Distraction
+Light Rain,Landing,Student,Casual Entertainment
+Heavy Turbulence,Landing,Parent with Child,Calming Distraction
+Heavy Turbulence,Landing,Solo Leisure,Calming Distraction
+Clear Skies,Takeoff,Business Traveler,Casual Entertainment
+Light Rain,Landing,Student,Casual Entertainment
+Light Rain,Cruising,Solo Leisure,Casual Entertainment
+Night Flight,Landing,Solo Leisure,Sleep & Relax
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Night Flight,Cruising,Parent with Child,Family Entertainment
+Light Rain,Landing,Business Traveler,Casual Entertainment
+Night Flight,Takeoff,Business Traveler,Sleep & Relax
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Clear Skies,Takeoff,Business Traveler,Casual Entertainment
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Night Flight,Landing,Parent with Child,Family Entertainment
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Heavy Turbulence,Landing,Parent with Child,Calming Distraction
+Light Rain,Cruising,Student,Casual Entertainment
+Light Rain,Landing,Student,Casual Entertainment
+Clear Skies,Takeoff,Student,Casual Entertainment
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Light Rain,Cruising,Parent with Child,Family Entertainment
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Night Flight,Cruising,Parent with Child,Family Entertainment
+Clear Skies,Landing,Business Traveler,Casual Entertainment
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Light Rain,Cruising,Solo Leisure,Casual Entertainment
+Light Rain,Takeoff,Business Traveler,Casual Entertainment
+Clear Skies,Takeoff,Business Traveler,Casual Entertainment
+Heavy Turbulence,Landing,Parent with Child,Calming Distraction
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Clear Skies,Takeoff,Business Traveler,Casual Entertainment
+Night Flight,Cruising,Student,Sleep & Relax
+Heavy Turbulence,Takeoff,Parent with Child,Calming Distraction
+Light Rain,Takeoff,Parent with Child,Family Entertainment
+Heavy Turbulence,Landing,Parent with Child,Calming Distraction
+Night Flight,Landing,Parent with Child,Family Entertainment
+Clear Skies,Cruising,Student,Casual Entertainment
+Heavy Turbulence,Cruising,Parent with Child,Calming Distraction
+Light Rain,Landing,Business Traveler,Casual Entertainment
+Heavy Turbulence,Landing,Parent with Child,Calming Distraction
+Night Flight,Cruising,Business Traveler,Productive & Focus
+Night Flight,Landing,Student,Sleep & Relax
+Heavy Turbulence,Cruising,Student,Calming Distraction
+Heavy Turbulence,Cruising,Student,Calming Distraction
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Light Rain,Cruising,Student,Casual Entertainment
+Heavy Turbulence,Cruising,Student,Calming Distraction
+Heavy Turbulence,Cruising,Parent with Child,Calming Distraction
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Night Flight,Takeoff,Solo Leisure,Sleep & Relax
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Night Flight,Cruising,Parent with Child,Family Entertainment
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Heavy Turbulence,Landing,Student,Calming Distraction
+Light Rain,Cruising,Parent with Child,Family Entertainment
+Night Flight,Landing,Parent with Child,Family Entertainment
+Heavy Turbulence,Cruising,Business Traveler,Calming Distraction
+Heavy Turbulence,Takeoff,Student,Calming Distraction
+Heavy Turbulence,Takeoff,Business Traveler,Calming Distraction
+Light Rain,Cruising,Solo Leisure,Casual Entertainment
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Clear Skies,Cruising,Parent with Child,Family Entertainment
+Night Flight,Cruising,Student,Sleep & Relax
+Heavy Turbulence,Landing,Parent with Child,Calming Distraction
+Night Flight,Cruising,Parent with Child,Family Entertainment
+Light Rain,Cruising,Solo Leisure,Casual Entertainment
+Light Rain,Takeoff,Business Traveler,Casual Entertainment
+Heavy Turbulence,Landing,Student,Calming Distraction
+Clear Skies,Cruising,Student,Casual Entertainment
+Night Flight,Takeoff,Parent with Child,Family Entertainment
+Light Rain,Cruising,Student,Casual Entertainment
+Clear Skies,Landing,Student,Casual Entertainment
+Heavy Turbulence,Cruising,Business Traveler,Calming Distraction
+Night Flight,Takeoff,Student,Sleep & Relax
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Night Flight,Landing,Business Traveler,Sleep & Relax
+Light Rain,Cruising,Parent with Child,Family Entertainment
+Night Flight,Cruising,Parent with Child,Family Entertainment
+Clear Skies,Landing,Parent with Child,Family Entertainment
+Light Rain,Landing,Parent with Child,Family Entertainment
+Light Rain,Landing,Parent with Child,Family Entertainment
+Light Rain,Takeoff,Business Traveler,Casual Entertainment
+Light Rain,Takeoff,Solo Leisure,Casual Entertainment
+Clear Skies,Cruising,Parent with Child,Family Entertainment
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Night Flight,Takeoff,Parent with Child,Family Entertainment
+Light Rain,Cruising,Parent with Child,Family Entertainment
+Light Rain,Cruising,Parent with Child,Family Entertainment
+Clear Skies,Takeoff,Solo Leisure,Casual Entertainment
+Light Rain,Landing,Student,Casual Entertainment
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Clear Skies,Takeoff,Student,Casual Entertainment
+Night Flight,Landing,Student,Sleep & Relax
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Night Flight,Takeoff,Student,Sleep & Relax
+Night Flight,Cruising,Parent with Child,Family Entertainment
+Heavy Turbulence,Landing,Parent with Child,Calming Distraction
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Light Rain,Cruising,Student,Casual Entertainment
+Clear Skies,Landing,Student,Casual Entertainment
+Night Flight,Landing,Parent with Child,Family Entertainment
+Light Rain,Landing,Student,Casual Entertainment
+Clear Skies,Takeoff,Student,Casual Entertainment
+Light Rain,Landing,Business Traveler,Casual Entertainment
+Heavy Turbulence,Cruising,Business Traveler,Calming Distraction
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Light Rain,Cruising,Parent with Child,Family Entertainment
+Heavy Turbulence,Takeoff,Business Traveler,Calming Distraction
+Clear Skies,Cruising,Student,Casual Entertainment
+Night Flight,Cruising,Student,Sleep & Relax
+Night Flight,Takeoff,Student,Sleep & Relax
+Light Rain,Landing,Business Traveler,Casual Entertainment
+Clear Skies,Cruising,Student,Casual Entertainment
+Clear Skies,Takeoff,Business Traveler,Casual Entertainment
+Clear Skies,Landing,Student,Casual Entertainment
+Clear Skies,Landing,Business Traveler,Casual Entertainment
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Clear Skies,Cruising,Student,Casual Entertainment
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Light Rain,Takeoff,Student,Casual Entertainment
+Heavy Turbulence,Takeoff,Business Traveler,Calming Distraction
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Light Rain,Cruising,Business Traveler,Productive & Focus
+Night Flight,Takeoff,Student,Sleep & Relax
+Clear Skies,Takeoff,Parent with Child,Family Entertainment
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Night Flight,Cruising,Parent with Child,Family Entertainment
+Heavy Turbulence,Takeoff,Business Traveler,Calming Distraction
+Light Rain,Cruising,Parent with Child,Family Entertainment
+Light Rain,Takeoff,Student,Casual Entertainment
+Night Flight,Takeoff,Student,Sleep & Relax
+Night Flight,Takeoff,Business Traveler,Sleep & Relax
+Light Rain,Takeoff,Student,Casual Entertainment
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Light Rain,Landing,Business Traveler,Casual Entertainment
+Night Flight,Takeoff,Business Traveler,Sleep & Relax
+Clear Skies,Takeoff,Parent with Child,Family Entertainment
+Light Rain,Landing,Parent with Child,Family Entertainment
+Light Rain,Takeoff,Business Traveler,Casual Entertainment
+Night Flight,Takeoff,Business Traveler,Sleep & Relax
+Light Rain,Takeoff,Parent with Child,Family Entertainment
+Light Rain,Landing,Parent with Child,Family Entertainment
+Heavy Turbulence,Cruising,Student,Calming Distraction
+Heavy Turbulence,Takeoff,Solo Leisure,Calming Distraction
+Light Rain,Takeoff,Student,Casual Entertainment
+Clear Skies,Takeoff,Parent with Child,Family Entertainment
+Night Flight,Landing,Business Traveler,Sleep & Relax
+Night Flight,Takeoff,Student,Sleep & Relax
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Light Rain,Cruising,Business Traveler,Productive & Focus
+Night Flight,Landing,Parent with Child,Family Entertainment
+Night Flight,Takeoff,Solo Leisure,Sleep & Relax
+Clear Skies,Cruising,Parent with Child,Family Entertainment
+Clear Skies,Landing,Business Traveler,Casual Entertainment
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Night Flight,Landing,Business Traveler,Sleep & Relax
+Night Flight,Takeoff,Parent with Child,Family Entertainment
+Night Flight,Cruising,Student,Sleep & Relax
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Heavy Turbulence,Landing,Parent with Child,Calming Distraction
+Night Flight,Cruising,Student,Sleep & Relax
+Light Rain,Cruising,Solo Leisure,Casual Entertainment
+Clear Skies,Cruising,Parent with Child,Family Entertainment
+Night Flight,Cruising,Parent with Child,Family Entertainment
+Heavy Turbulence,Landing,Student,Calming Distraction
+Clear Skies,Cruising,Student,Casual Entertainment
+Heavy Turbulence,Landing,Solo Leisure,Calming Distraction
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Cruising,Business Traveler,Calming Distraction
+Heavy Turbulence,Landing,Solo Leisure,Calming Distraction
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Clear Skies,Takeoff,Student,Casual Entertainment
+Night Flight,Cruising,Student,Sleep & Relax
+Night Flight,Landing,Business Traveler,Sleep & Relax
+Light Rain,Takeoff,Business Traveler,Casual Entertainment
+Night Flight,Takeoff,Student,Sleep & Relax
+Light Rain,Cruising,Business Traveler,Productive & Focus
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Night Flight,Takeoff,Student,Sleep & Relax
+Light Rain,Takeoff,Solo Leisure,Casual Entertainment
+Night Flight,Landing,Student,Sleep & Relax
+Clear Skies,Cruising,Student,Casual Entertainment
+Night Flight,Takeoff,Parent with Child,Family Entertainment
+Clear Skies,Takeoff,Parent with Child,Family Entertainment
+Clear Skies,Takeoff,Parent with Child,Family Entertainment
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Landing,Student,Calming Distraction
+Clear Skies,Takeoff,Parent with Child,Family Entertainment
+Clear Skies,Landing,Business Traveler,Casual Entertainment
+Night Flight,Cruising,Parent with Child,Family Entertainment
+Heavy Turbulence,Cruising,Parent with Child,Calming Distraction
+Light Rain,Takeoff,Student,Casual Entertainment
+Night Flight,Landing,Business Traveler,Sleep & Relax
+Heavy Turbulence,Cruising,Business Traveler,Calming Distraction
+Heavy Turbulence,Landing,Solo Leisure,Calming Distraction
+Night Flight,Takeoff,Business Traveler,Sleep & Relax
+Night Flight,Takeoff,Solo Leisure,Sleep & Relax
+Light Rain,Takeoff,Parent with Child,Family Entertainment
+Night Flight,Cruising,Parent with Child,Family Entertainment
+Night Flight,Landing,Solo Leisure,Sleep & Relax
+Light Rain,Takeoff,Student,Casual Entertainment
+Light Rain,Cruising,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Landing,Parent with Child,Calming Distraction
+Night Flight,Cruising,Student,Sleep & Relax
+Night Flight,Cruising,Student,Sleep & Relax
+Night Flight,Landing,Parent with Child,Family Entertainment
+Night Flight,Landing,Student,Sleep & Relax
+Night Flight,Takeoff,Solo Leisure,Sleep & Relax
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Clear Skies,Takeoff,Parent with Child,Family Entertainment
+Light Rain,Cruising,Parent with Child,Family Entertainment
+Heavy Turbulence,Cruising,Parent with Child,Calming Distraction
+Light Rain,Cruising,Business Traveler,Productive & Focus
+Night Flight,Landing,Business Traveler,Sleep & Relax
+Night Flight,Takeoff,Student,Sleep & Relax
+Light Rain,Takeoff,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Takeoff,Solo Leisure,Calming Distraction
+Light Rain,Takeoff,Student,Casual Entertainment
+Light Rain,Landing,Business Traveler,Casual Entertainment
+Heavy Turbulence,Cruising,Business Traveler,Calming Distraction
+Heavy Turbulence,Takeoff,Business Traveler,Calming Distraction
+Heavy Turbulence,Landing,Student,Calming Distraction
+Light Rain,Takeoff,Parent with Child,Family Entertainment
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Light Rain,Takeoff,Solo Leisure,Casual Entertainment
+Light Rain,Takeoff,Student,Casual Entertainment
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Light Rain,Landing,Parent with Child,Family Entertainment
+Light Rain,Takeoff,Business Traveler,Casual Entertainment
+Clear Skies,Takeoff,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Cruising,Student,Calming Distraction
+Heavy Turbulence,Cruising,Student,Calming Distraction
+Heavy Turbulence,Takeoff,Business Traveler,Calming Distraction
+Light Rain,Landing,Parent with Child,Family Entertainment
+Light Rain,Cruising,Parent with Child,Family Entertainment
+Clear Skies,Takeoff,Student,Casual Entertainment
+Heavy Turbulence,Landing,Parent with Child,Calming Distraction
+Light Rain,Cruising,Parent with Child,Family Entertainment
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Heavy Turbulence,Landing,Student,Calming Distraction
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Clear Skies,Takeoff,Student,Casual Entertainment
+Light Rain,Cruising,Business Traveler,Productive & Focus
+Heavy Turbulence,Cruising,Student,Calming Distraction
+Heavy Turbulence,Takeoff,Parent with Child,Calming Distraction
+Clear Skies,Landing,Business Traveler,Casual Entertainment
+Night Flight,Takeoff,Solo Leisure,Sleep & Relax
+Clear Skies,Landing,Parent with Child,Family Entertainment
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Heavy Turbulence,Cruising,Business Traveler,Calming Distraction
+Clear Skies,Cruising,Student,Casual Entertainment
+Night Flight,Takeoff,Solo Leisure,Sleep & Relax
+Night Flight,Cruising,Business Traveler,Productive & Focus
+Light Rain,Takeoff,Parent with Child,Family Entertainment
+Clear Skies,Cruising,Parent with Child,Family Entertainment
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Heavy Turbulence,Landing,Solo Leisure,Calming Distraction
+Light Rain,Takeoff,Student,Casual Entertainment
+Clear Skies,Cruising,Parent with Child,Family Entertainment
+Night Flight,Landing,Parent with Child,Family Entertainment
+Heavy Turbulence,Takeoff,Parent with Child,Calming Distraction
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Light Rain,Takeoff,Business Traveler,Casual Entertainment
+Clear Skies,Cruising,Parent with Child,Family Entertainment
+Heavy Turbulence,Cruising,Parent with Child,Calming Distraction
+Night Flight,Landing,Solo Leisure,Sleep & Relax
+Night Flight,Takeoff,Solo Leisure,Sleep & Relax
+Night Flight,Takeoff,Business Traveler,Sleep & Relax
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Light Rain,Cruising,Student,Casual Entertainment
+Heavy Turbulence,Takeoff,Solo Leisure,Calming Distraction
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Light Rain,Landing,Student,Casual Entertainment
+Clear Skies,Landing,Parent with Child,Family Entertainment
+Light Rain,Cruising,Business Traveler,Productive & Focus
+Clear Skies,Cruising,Student,Casual Entertainment
+Clear Skies,Landing,Parent with Child,Family Entertainment
+Light Rain,Cruising,Business Traveler,Productive & Focus
+Night Flight,Cruising,Student,Sleep & Relax
+Night Flight,Landing,Solo Leisure,Sleep & Relax
+Light Rain,Cruising,Student,Casual Entertainment
+Clear Skies,Landing,Parent with Child,Family Entertainment
+Night Flight,Landing,Student,Sleep & Relax
+Night Flight,Landing,Solo Leisure,Sleep & Relax
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Clear Skies,Takeoff,Solo Leisure,Casual Entertainment
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Light Rain,Cruising,Solo Leisure,Casual Entertainment
+Clear Skies,Takeoff,Business Traveler,Casual Entertainment
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Clear Skies,Landing,Parent with Child,Family Entertainment
+Heavy Turbulence,Takeoff,Parent with Child,Calming Distraction
+Light Rain,Cruising,Parent with Child,Family Entertainment
+Heavy Turbulence,Landing,Parent with Child,Calming Distraction
+Heavy Turbulence,Cruising,Business Traveler,Calming Distraction
+Light Rain,Cruising,Business Traveler,Productive & Focus
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Clear Skies,Takeoff,Student,Casual Entertainment
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Light Rain,Cruising,Parent with Child,Family Entertainment
+Clear Skies,Takeoff,Business Traveler,Casual Entertainment
+Light Rain,Takeoff,Business Traveler,Casual Entertainment
+Light Rain,Landing,Business Traveler,Casual Entertainment
+Light Rain,Takeoff,Parent with Child,Family Entertainment
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Cruising,Parent with Child,Calming Distraction
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Clear Skies,Takeoff,Business Traveler,Casual Entertainment
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Light Rain,Landing,Student,Casual Entertainment
+Clear Skies,Takeoff,Student,Casual Entertainment
+Night Flight,Cruising,Parent with Child,Family Entertainment
+Night Flight,Cruising,Student,Sleep & Relax
+Light Rain,Landing,Parent with Child,Family Entertainment
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Light Rain,Cruising,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Takeoff,Student,Calming Distraction
+Clear Skies,Cruising,Student,Casual Entertainment
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Light Rain,Cruising,Student,Casual Entertainment
+Heavy Turbulence,Landing,Solo Leisure,Calming Distraction
+Light Rain,Cruising,Parent with Child,Family Entertainment
+Clear Skies,Takeoff,Solo Leisure,Casual Entertainment
+Clear Skies,Takeoff,Parent with Child,Family Entertainment
+Heavy Turbulence,Landing,Solo Leisure,Calming Distraction
+Light Rain,Landing,Parent with Child,Family Entertainment
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Heavy Turbulence,Takeoff,Student,Calming Distraction
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Clear Skies,Landing,Parent with Child,Family Entertainment
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Cruising,Parent with Child,Calming Distraction
+Heavy Turbulence,Cruising,Student,Calming Distraction
+Clear Skies,Cruising,Parent with Child,Family Entertainment
+Heavy Turbulence,Landing,Student,Calming Distraction
+Light Rain,Cruising,Business Traveler,Productive & Focus
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Heavy Turbulence,Takeoff,Student,Calming Distraction
+Clear Skies,Cruising,Student,Casual Entertainment
+Heavy Turbulence,Landing,Parent with Child,Calming Distraction
+Heavy Turbulence,Landing,Student,Calming Distraction
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Night Flight,Cruising,Business Traveler,Productive & Focus
+Heavy Turbulence,Takeoff,Business Traveler,Calming Distraction
+Clear Skies,Takeoff,Student,Casual Entertainment
+Clear Skies,Landing,Student,Casual Entertainment
+Heavy Turbulence,Takeoff,Business Traveler,Calming Distraction
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Night Flight,Landing,Parent with Child,Family Entertainment
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Clear Skies,Landing,Business Traveler,Casual Entertainment
+Light Rain,Takeoff,Solo Leisure,Casual Entertainment
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Heavy Turbulence,Landing,Solo Leisure,Calming Distraction
+Heavy Turbulence,Takeoff,Parent with Child,Calming Distraction
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Heavy Turbulence,Cruising,Parent with Child,Calming Distraction
+Light Rain,Cruising,Student,Casual Entertainment
+Night Flight,Takeoff,Student,Sleep & Relax
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Light Rain,Takeoff,Parent with Child,Family Entertainment
+Night Flight,Cruising,Student,Sleep & Relax
+Heavy Turbulence,Landing,Student,Calming Distraction
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Clear Skies,Landing,Business Traveler,Casual Entertainment
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Light Rain,Takeoff,Student,Casual Entertainment
+Clear Skies,Takeoff,Student,Casual Entertainment
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Night Flight,Landing,Student,Sleep & Relax
+Light Rain,Cruising,Business Traveler,Productive & Focus
+Heavy Turbulence,Takeoff,Business Traveler,Calming Distraction
+Clear Skies,Takeoff,Business Traveler,Casual Entertainment
+Clear Skies,Takeoff,Student,Casual Entertainment
+Light Rain,Cruising,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Landing,Student,Calming Distraction
+Heavy Turbulence,Cruising,Business Traveler,Calming Distraction
+Clear Skies,Cruising,Parent with Child,Family Entertainment
+Clear Skies,Takeoff,Student,Casual Entertainment
+Heavy Turbulence,Takeoff,Parent with Child,Calming Distraction
+Light Rain,Cruising,Parent with Child,Family Entertainment
+Light Rain,Landing,Student,Casual Entertainment
+Clear Skies,Takeoff,Business Traveler,Casual Entertainment
+Heavy Turbulence,Takeoff,Student,Calming Distraction
+Heavy Turbulence,Cruising,Business Traveler,Calming Distraction
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Light Rain,Landing,Student,Casual Entertainment
+Night Flight,Landing,Student,Sleep & Relax
+Night Flight,Takeoff,Student,Sleep & Relax
+Light Rain,Takeoff,Solo Leisure,Casual Entertainment
+Clear Skies,Takeoff,Student,Casual Entertainment
+Heavy Turbulence,Cruising,Parent with Child,Calming Distraction
+Heavy Turbulence,Takeoff,Business Traveler,Calming Distraction
+Light Rain,Takeoff,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Cruising,Student,Calming Distraction
+Clear Skies,Cruising,Parent with Child,Family Entertainment
+Night Flight,Landing,Parent with Child,Family Entertainment
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Light Rain,Cruising,Student,Casual Entertainment
+Light Rain,Cruising,Student,Casual Entertainment
+Night Flight,Takeoff,Student,Sleep & Relax
+Light Rain,Takeoff,Parent with Child,Family Entertainment
+Heavy Turbulence,Cruising,Parent with Child,Calming Distraction
+Heavy Turbulence,Takeoff,Solo Leisure,Calming Distraction
+Light Rain,Cruising,Parent with Child,Family Entertainment
+Night Flight,Landing,Parent with Child,Family Entertainment
+Night Flight,Takeoff,Parent with Child,Family Entertainment
+Heavy Turbulence,Landing,Student,Calming Distraction
+Night Flight,Cruising,Student,Sleep & Relax
+Night Flight,Landing,Student,Sleep & Relax
+Night Flight,Cruising,Student,Sleep & Relax
+Light Rain,Cruising,Parent with Child,Family Entertainment
+Night Flight,Cruising,Student,Sleep & Relax
+Light Rain,Takeoff,Solo Leisure,Casual Entertainment
+Light Rain,Takeoff,Parent with Child,Family Entertainment
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Night Flight,Takeoff,Student,Sleep & Relax
+Clear Skies,Landing,Business Traveler,Casual Entertainment
+Night Flight,Takeoff,Business Traveler,Sleep & Relax
+Heavy Turbulence,Takeoff,Business Traveler,Calming Distraction
+Night Flight,Landing,Solo Leisure,Sleep & Relax
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Light Rain,Cruising,Student,Casual Entertainment
+Clear Skies,Landing,Parent with Child,Family Entertainment
+Clear Skies,Takeoff,Business Traveler,Casual Entertainment
+Heavy Turbulence,Takeoff,Parent with Child,Calming Distraction
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Night Flight,Cruising,Parent with Child,Family Entertainment
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Light Rain,Landing,Business Traveler,Casual Entertainment
+Light Rain,Takeoff,Parent with Child,Family Entertainment
+Night Flight,Takeoff,Solo Leisure,Sleep & Relax
+Night Flight,Cruising,Student,Sleep & Relax
+Clear Skies,Takeoff,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Cruising,Business Traveler,Calming Distraction
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Heavy Turbulence,Takeoff,Parent with Child,Calming Distraction
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Cruising,Parent with Child,Calming Distraction
+Heavy Turbulence,Takeoff,Solo Leisure,Calming Distraction
+Heavy Turbulence,Takeoff,Parent with Child,Calming Distraction
+Night Flight,Landing,Parent with Child,Family Entertainment
+Night Flight,Cruising,Student,Sleep & Relax
+Heavy Turbulence,Takeoff,Student,Calming Distraction
+Clear Skies,Cruising,Parent with Child,Family Entertainment
+Heavy Turbulence,Cruising,Parent with Child,Calming Distraction
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Heavy Turbulence,Cruising,Parent with Child,Calming Distraction
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Takeoff,Solo Leisure,Calming Distraction
+Light Rain,Takeoff,Solo Leisure,Casual Entertainment
+Light Rain,Cruising,Solo Leisure,Casual Entertainment
+Light Rain,Takeoff,Solo Leisure,Casual Entertainment
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Night Flight,Takeoff,Student,Sleep & Relax
+Night Flight,Cruising,Student,Sleep & Relax
+Heavy Turbulence,Landing,Parent with Child,Calming Distraction
+Clear Skies,Cruising,Parent with Child,Family Entertainment
+Light Rain,Landing,Parent with Child,Family Entertainment
+Heavy Turbulence,Takeoff,Solo Leisure,Calming Distraction
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Light Rain,Cruising,Student,Casual Entertainment
+Night Flight,Cruising,Student,Sleep & Relax
+Clear Skies,Takeoff,Solo Leisure,Casual Entertainment
+Light Rain,Takeoff,Student,Casual Entertainment
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Night Flight,Landing,Student,Sleep & Relax
+Night Flight,Takeoff,Business Traveler,Sleep & Relax
+Clear Skies,Cruising,Parent with Child,Family Entertainment
+Clear Skies,Takeoff,Parent with Child,Family Entertainment
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Heavy Turbulence,Takeoff,Parent with Child,Calming Distraction
+Night Flight,Takeoff,Student,Sleep & Relax
+Night Flight,Cruising,Student,Sleep & Relax
+Heavy Turbulence,Landing,Solo Leisure,Calming Distraction
+Clear Skies,Takeoff,Student,Casual Entertainment
+Light Rain,Cruising,Parent with Child,Family Entertainment
+Night Flight,Landing,Parent with Child,Family Entertainment
+Heavy Turbulence,Landing,Parent with Child,Calming Distraction
+Clear Skies,Landing,Student,Casual Entertainment
+Light Rain,Cruising,Student,Casual Entertainment
+Light Rain,Cruising,Solo Leisure,Casual Entertainment
+Night Flight,Cruising,Business Traveler,Productive & Focus
+Clear Skies,Takeoff,Student,Casual Entertainment
+Night Flight,Takeoff,Solo Leisure,Sleep & Relax
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Night Flight,Cruising,Business Traveler,Productive & Focus
+Light Rain,Cruising,Business Traveler,Productive & Focus
+Light Rain,Cruising,Parent with Child,Family Entertainment
+Clear Skies,Cruising,Student,Casual Entertainment
+Night Flight,Takeoff,Parent with Child,Family Entertainment
+Clear Skies,Takeoff,Parent with Child,Family Entertainment
+Clear Skies,Landing,Student,Casual Entertainment
+Clear Skies,Takeoff,Business Traveler,Casual Entertainment
+Night Flight,Cruising,Parent with Child,Family Entertainment
+Light Rain,Landing,Student,Casual Entertainment
+Heavy Turbulence,Landing,Solo Leisure,Calming Distraction
+Heavy Turbulence,Cruising,Parent with Child,Calming Distraction
+Clear Skies,Landing,Student,Casual Entertainment
+Clear Skies,Landing,Parent with Child,Family Entertainment
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Night Flight,Takeoff,Student,Sleep & Relax
+Clear Skies,Takeoff,Solo Leisure,Casual Entertainment
+Night Flight,Landing,Business Traveler,Sleep & Relax
+Light Rain,Takeoff,Solo Leisure,Casual Entertainment
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Landing,Student,Calming Distraction
+Night Flight,Cruising,Parent with Child,Family Entertainment
+Heavy Turbulence,Cruising,Business Traveler,Calming Distraction
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Clear Skies,Cruising,Student,Casual Entertainment
+Light Rain,Takeoff,Solo Leisure,Casual Entertainment
+Clear Skies,Landing,Business Traveler,Casual Entertainment
+Clear Skies,Takeoff,Parent with Child,Family Entertainment
+Clear Skies,Takeoff,Student,Casual Entertainment
+Light Rain,Takeoff,Solo Leisure,Casual Entertainment
+Night Flight,Cruising,Business Traveler,Productive & Focus
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Night Flight,Cruising,Parent with Child,Family Entertainment
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Light Rain,Takeoff,Parent with Child,Family Entertainment
+Heavy Turbulence,Takeoff,Student,Calming Distraction
+Night Flight,Takeoff,Business Traveler,Sleep & Relax
+Night Flight,Takeoff,Solo Leisure,Sleep & Relax
+Light Rain,Takeoff,Student,Casual Entertainment
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Night Flight,Landing,Student,Sleep & Relax
+Heavy Turbulence,Takeoff,Parent with Child,Calming Distraction
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Cruising,Parent with Child,Calming Distraction
+Night Flight,Takeoff,Solo Leisure,Sleep & Relax
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Light Rain,Landing,Parent with Child,Family Entertainment
+Night Flight,Cruising,Parent with Child,Family Entertainment
+Clear Skies,Landing,Student,Casual Entertainment
+Light Rain,Takeoff,Student,Casual Entertainment
+Heavy Turbulence,Cruising,Student,Calming Distraction
+Light Rain,Landing,Business Traveler,Casual Entertainment
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Night Flight,Cruising,Student,Sleep & Relax
+Light Rain,Cruising,Business Traveler,Productive & Focus
+Night Flight,Cruising,Student,Sleep & Relax
+Heavy Turbulence,Landing,Parent with Child,Calming Distraction
+Clear Skies,Landing,Business Traveler,Casual Entertainment
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Heavy Turbulence,Landing,Student,Calming Distraction
+Heavy Turbulence,Landing,Parent with Child,Calming Distraction
+Heavy Turbulence,Takeoff,Parent with Child,Calming Distraction
+Heavy Turbulence,Cruising,Business Traveler,Calming Distraction
+Clear Skies,Takeoff,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Clear Skies,Takeoff,Student,Casual Entertainment
+Light Rain,Cruising,Solo Leisure,Casual Entertainment
+Light Rain,Takeoff,Solo Leisure,Casual Entertainment
+Night Flight,Takeoff,Parent with Child,Family Entertainment
+Heavy Turbulence,Cruising,Parent with Child,Calming Distraction
+Light Rain,Takeoff,Parent with Child,Family Entertainment
+Clear Skies,Takeoff,Business Traveler,Casual Entertainment
+Night Flight,Takeoff,Parent with Child,Family Entertainment
+Light Rain,Cruising,Business Traveler,Productive & Focus
+Light Rain,Takeoff,Solo Leisure,Casual Entertainment
+Light Rain,Landing,Business Traveler,Casual Entertainment
+Clear Skies,Takeoff,Business Traveler,Casual Entertainment
+Clear Skies,Landing,Parent with Child,Family Entertainment
+Clear Skies,Takeoff,Parent with Child,Family Entertainment
+Night Flight,Cruising,Student,Sleep & Relax
+Light Rain,Takeoff,Solo Leisure,Casual Entertainment
+Light Rain,Cruising,Parent with Child,Family Entertainment
+Light Rain,Cruising,Business Traveler,Productive & Focus
+Heavy Turbulence,Cruising,Business Traveler,Calming Distraction
+Night Flight,Takeoff,Student,Sleep & Relax
+Light Rain,Cruising,Student,Casual Entertainment
+Night Flight,Landing,Solo Leisure,Sleep & Relax
+Clear Skies,Cruising,Student,Casual Entertainment
+Clear Skies,Landing,Parent with Child,Family Entertainment
+Night Flight,Takeoff,Parent with Child,Family Entertainment
+Heavy Turbulence,Cruising,Business Traveler,Calming Distraction
+Heavy Turbulence,Takeoff,Student,Calming Distraction
+Night Flight,Landing,Solo Leisure,Sleep & Relax
+Night Flight,Cruising,Parent with Child,Family Entertainment
+Heavy Turbulence,Takeoff,Parent with Child,Calming Distraction
+Night Flight,Takeoff,Business Traveler,Sleep & Relax
+Night Flight,Cruising,Student,Sleep & Relax
+Clear Skies,Takeoff,Solo Leisure,Casual Entertainment
+Light Rain,Takeoff,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Cruising,Business Traveler,Calming Distraction
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Clear Skies,Takeoff,Business Traveler,Casual Entertainment
+Light Rain,Landing,Business Traveler,Casual Entertainment
+Clear Skies,Takeoff,Parent with Child,Family Entertainment
+Night Flight,Landing,Business Traveler,Sleep & Relax
+Clear Skies,Cruising,Student,Casual Entertainment
+Heavy Turbulence,Cruising,Parent with Child,Calming Distraction
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Clear Skies,Cruising,Student,Casual Entertainment
+Heavy Turbulence,Landing,Student,Calming Distraction
+Night Flight,Takeoff,Business Traveler,Sleep & Relax
+Clear Skies,Cruising,Student,Casual Entertainment
+Heavy Turbulence,Cruising,Parent with Child,Calming Distraction
+Heavy Turbulence,Cruising,Business Traveler,Calming Distraction
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Clear Skies,Landing,Parent with Child,Family Entertainment
+Heavy Turbulence,Takeoff,Business Traveler,Calming Distraction
+Heavy Turbulence,Landing,Parent with Child,Calming Distraction
+Clear Skies,Takeoff,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Landing,Student,Calming Distraction
+Light Rain,Cruising,Solo Leisure,Casual Entertainment
+Night Flight,Takeoff,Solo Leisure,Sleep & Relax
+Clear Skies,Takeoff,Business Traveler,Casual Entertainment
+Night Flight,Landing,Parent with Child,Family Entertainment
+Clear Skies,Cruising,Parent with Child,Family Entertainment
+Light Rain,Takeoff,Student,Casual Entertainment
+Clear Skies,Takeoff,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Cruising,Parent with Child,Calming Distraction
+Heavy Turbulence,Landing,Solo Leisure,Calming Distraction
+Clear Skies,Cruising,Parent with Child,Family Entertainment
+Light Rain,Takeoff,Parent with Child,Family Entertainment
+Night Flight,Cruising,Business Traveler,Productive & Focus
+Heavy Turbulence,Cruising,Parent with Child,Calming Distraction
+Clear Skies,Takeoff,Business Traveler,Casual Entertainment
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Night Flight,Landing,Student,Sleep & Relax
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Takeoff,Business Traveler,Calming Distraction
+Heavy Turbulence,Landing,Solo Leisure,Calming Distraction
+Night Flight,Cruising,Student,Sleep & Relax
+Clear Skies,Landing,Student,Casual Entertainment
+Heavy Turbulence,Landing,Parent with Child,Calming Distraction
+Heavy Turbulence,Cruising,Student,Calming Distraction
+Light Rain,Takeoff,Student,Casual Entertainment
+Clear Skies,Landing,Student,Casual Entertainment
+Night Flight,Landing,Parent with Child,Family Entertainment
+Light Rain,Landing,Parent with Child,Family Entertainment
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Light Rain,Cruising,Parent with Child,Family Entertainment
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Light Rain,Cruising,Student,Casual Entertainment
+Night Flight,Landing,Business Traveler,Sleep & Relax
+Light Rain,Takeoff,Business Traveler,Casual Entertainment
+Heavy Turbulence,Takeoff,Solo Leisure,Calming Distraction
+Heavy Turbulence,Takeoff,Solo Leisure,Calming Distraction
+Night Flight,Takeoff,Business Traveler,Sleep & Relax
+Night Flight,Takeoff,Student,Sleep & Relax
+Night Flight,Landing,Parent with Child,Family Entertainment
+Night Flight,Cruising,Student,Sleep & Relax
+Night Flight,Cruising,Business Traveler,Productive & Focus
+Clear Skies,Takeoff,Student,Casual Entertainment
+Light Rain,Takeoff,Student,Casual Entertainment
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Clear Skies,Cruising,Parent with Child,Family Entertainment
+Light Rain,Landing,Business Traveler,Casual Entertainment
+Clear Skies,Takeoff,Solo Leisure,Casual Entertainment
+Clear Skies,Cruising,Student,Casual Entertainment
+Clear Skies,Takeoff,Student,Casual Entertainment
+Night Flight,Cruising,Student,Sleep & Relax
+Night Flight,Cruising,Student,Sleep & Relax
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Light Rain,Takeoff,Solo Leisure,Casual Entertainment
+Clear Skies,Landing,Business Traveler,Casual Entertainment
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Heavy Turbulence,Takeoff,Solo Leisure,Calming Distraction
+Heavy Turbulence,Takeoff,Parent with Child,Calming Distraction
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Night Flight,Landing,Student,Sleep & Relax
+Heavy Turbulence,Takeoff,Business Traveler,Calming Distraction
+Heavy Turbulence,Cruising,Student,Calming Distraction
+Clear Skies,Cruising,Parent with Child,Family Entertainment
+Night Flight,Takeoff,Student,Sleep & Relax
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Landing,Solo Leisure,Calming Distraction
+Light Rain,Landing,Business Traveler,Casual Entertainment
+Light Rain,Landing,Business Traveler,Casual Entertainment
+Heavy Turbulence,Takeoff,Parent with Child,Calming Distraction
+Clear Skies,Cruising,Parent with Child,Family Entertainment
+Heavy Turbulence,Cruising,Parent with Child,Calming Distraction
+Light Rain,Takeoff,Business Traveler,Casual Entertainment
+Heavy Turbulence,Takeoff,Parent with Child,Calming Distraction
+Clear Skies,Landing,Student,Casual Entertainment
+Night Flight,Cruising,Student,Sleep & Relax
+Night Flight,Cruising,Parent with Child,Family Entertainment
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Clear Skies,Cruising,Student,Casual Entertainment
+Heavy Turbulence,Takeoff,Student,Calming Distraction
+Night Flight,Cruising,Parent with Child,Family Entertainment
+Night Flight,Cruising,Student,Sleep & Relax
+Night Flight,Takeoff,Student,Sleep & Relax
+Light Rain,Cruising,Student,Casual Entertainment
+Night Flight,Landing,Student,Sleep & Relax
+Night Flight,Landing,Student,Sleep & Relax
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Night Flight,Landing,Parent with Child,Family Entertainment
+Light Rain,Takeoff,Solo Leisure,Casual Entertainment
+Light Rain,Takeoff,Business Traveler,Casual Entertainment
+Heavy Turbulence,Landing,Parent with Child,Calming Distraction
+Clear Skies,Landing,Business Traveler,Casual Entertainment
+Night Flight,Takeoff,Business Traveler,Sleep & Relax
+Light Rain,Cruising,Parent with Child,Family Entertainment
+Heavy Turbulence,Cruising,Student,Calming Distraction
+Light Rain,Cruising,Business Traveler,Productive & Focus
+Clear Skies,Takeoff,Student,Casual Entertainment
+Night Flight,Landing,Solo Leisure,Sleep & Relax
+Clear Skies,Cruising,Parent with Child,Family Entertainment
+Night Flight,Landing,Solo Leisure,Sleep & Relax
+Light Rain,Takeoff,Business Traveler,Casual Entertainment
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Clear Skies,Landing,Student,Casual Entertainment
+Night Flight,Landing,Solo Leisure,Sleep & Relax
+Heavy Turbulence,Takeoff,Business Traveler,Calming Distraction
+Night Flight,Takeoff,Business Traveler,Sleep & Relax
+Heavy Turbulence,Takeoff,Solo Leisure,Calming Distraction
+Night Flight,Landing,Parent with Child,Family Entertainment
+Light Rain,Landing,Student,Casual Entertainment
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Clear Skies,Takeoff,Parent with Child,Family Entertainment
+Light Rain,Landing,Parent with Child,Family Entertainment
+Heavy Turbulence,Cruising,Business Traveler,Calming Distraction
+Clear Skies,Cruising,Parent with Child,Family Entertainment
+Night Flight,Landing,Student,Sleep & Relax
+Light Rain,Landing,Business Traveler,Casual Entertainment
+Heavy Turbulence,Takeoff,Business Traveler,Calming Distraction
+Heavy Turbulence,Takeoff,Solo Leisure,Calming Distraction
+Light Rain,Takeoff,Student,Casual Entertainment
+Clear Skies,Landing,Parent with Child,Family Entertainment
+Heavy Turbulence,Cruising,Parent with Child,Calming Distraction
+Light Rain,Takeoff,Business Traveler,Casual Entertainment
+Heavy Turbulence,Takeoff,Student,Calming Distraction
+Night Flight,Cruising,Student,Sleep & Relax
+Light Rain,Cruising,Parent with Child,Family Entertainment
+Light Rain,Cruising,Business Traveler,Productive & Focus
+Night Flight,Takeoff,Student,Sleep & Relax
+Night Flight,Cruising,Parent with Child,Family Entertainment
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Heavy Turbulence,Landing,Student,Calming Distraction
+Light Rain,Takeoff,Business Traveler,Casual Entertainment
+Night Flight,Cruising,Parent with Child,Family Entertainment
+Night Flight,Landing,Business Traveler,Sleep & Relax
+Heavy Turbulence,Cruising,Solo Leisure,Calming Distraction
+Night Flight,Cruising,Student,Sleep & Relax
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Landing,Student,Calming Distraction
+Clear Skies,Cruising,Solo Leisure,Casual Entertainment
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Heavy Turbulence,Landing,Student,Calming Distraction
+Clear Skies,Takeoff,Business Traveler,Casual Entertainment
+Light Rain,Landing,Solo Leisure,Casual Entertainment
+Light Rain,Landing,Student,Casual Entertainment
+Clear Skies,Landing,Parent with Child,Family Entertainment
+Light Rain,Landing,Business Traveler,Casual Entertainment
+Clear Skies,Cruising,Business Traveler,Productive & Focus
+Heavy Turbulence,Takeoff,Student,Calming Distraction
+Heavy Turbulence,Cruising,Business Traveler,Calming Distraction
+Night Flight,Takeoff,Parent with Child,Family Entertainment
+Heavy Turbulence,Landing,Parent with Child,Calming Distraction
+Heavy Turbulence,Landing,Student,Calming Distraction
+Light Rain,Landing,Student,Casual Entertainment
+Heavy Turbulence,Landing,Parent with Child,Calming Distraction
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Light Rain,Landing,Student,Casual Entertainment
+Night Flight,Takeoff,Student,Sleep & Relax
+Clear Skies,Landing,Student,Casual Entertainment
+Light Rain,Landing,Student,Casual Entertainment
+Night Flight,Takeoff,Business Traveler,Sleep & Relax
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Night Flight,Cruising,Solo Leisure,Sleep & Relax
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Heavy Turbulence,Landing,Solo Leisure,Calming Distraction
+Clear Skies,Landing,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Landing,Business Traveler,Calming Distraction
+Light Rain,Takeoff,Student,Casual Entertainment
+Light Rain,Cruising,Solo Leisure,Casual Entertainment
+Heavy Turbulence,Cruising,Business Traveler,Calming Distraction
+Light Rain,Cruising,Parent with Child,Family Entertainment

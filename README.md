@@ -215,7 +215,6 @@ Create and activate a virtual environment:
 
 ```bash
 cd backend
-
 python -m venv venv
 
 # macOS/Linux
@@ -318,31 +317,6 @@ Features:
 - Turn-based interactions
 - Collision detection
 - Network-synchronized game state
-
----
-
-# 🔮 Future Roadmap
-
-## WebRTC Integration
-
-Transition from centralized Socket.IO communication to peer-to-peer WebRTC for lower latency and improved scalability.
-
-## Cabin Map Visualization
-
-An interactive cabin map displaying:
-
-- Active passengers
-- Popular content
-- Real-time cabin activity
-
-## Expanded Applet Ecosystem
-
-Future collaborative experiences include:
-
-- Shared music queues
-- Synchronized movie watching
-- Multiplayer trivia competitions
-- Group social experiences
 
 ---
 

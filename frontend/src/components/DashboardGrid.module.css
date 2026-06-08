@@ -1,70 +1,111 @@
-.gridContainer {
+.dashboardContainer {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  height: 100%;
-  animation: fadeIn 0.5s ease-out;
-}
-
-.sectionTitle {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-  color: var(--text-primary);
-  letter-spacing: -0.5px;
-}
-
-.loadingState {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  color: var(--accent-cyan);
-  font-weight: 500;
-  font-size: 1.2rem;
-  animation: pulse 1.5s infinite ease-in-out;
-}
-
-/* CSS Grid for automatic responsive wrapping */
-.mediaGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
-  padding-bottom: 2rem;
-  overflow-y: auto;
+  height: 100%;
+  animation: fadeIn 0.4s ease-out;
 }
 
-/* Custom Scrollbar for the grid */
-.mediaGrid::-webkit-scrollbar {
-  width: 6px;
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
-.mediaGrid::-webkit-scrollbar-thumb {
-  background: var(--border-color);
+
+.header h2 {
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* --- NEW FILTER BAR --- */
+.filterBar {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.filterBar::-webkit-scrollbar {
+  display: none; /* Hides scrollbar for clean UI but keeps it scrollable on touch */
+}
+
+.filterPill {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  padding: 0.5rem 1.25rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+.filterPill:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.activePill {
+  background: rgba(0, 210, 255, 0.15);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  box-shadow: 0 0 10px rgba(0, 210, 255, 0.2);
+}
+
+/* --- THE MEDIA GRID --- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  
+  /* NEW FIXES: Force rows to stay full height and pack at the top */
+  grid-auto-rows: max-content; 
+  align-content: start; 
+  
+  gap: 1.5rem;
+  overflow-y: auto;
+  padding-bottom: 2rem;
+  padding-right: 0.5rem;
+  
+  flex-grow: 1;
+  min-height: 0; 
+}
+
+.grid::-webkit-scrollbar {
+  width: 8px;
+}
+.grid::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
 }
+.grid::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-cyan);
+}
 
-/* The Card Container */
+/* --- PREMIUM MEDIA CARDS --- */
 .mediaCard {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
+  background: rgba(10, 15, 26, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
-  transition: var(--transition-smooth);
-  display: flex;
-  flex-direction: column;
-}
-
-.mediaCard:hover {
-  transform: translateY(-4px);
-  border-color: var(--border-glow);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), 0 0 15px var(--border-glow);
-}
-
-.imageWrapper {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   position: relative;
-  height: 160px;
+}
+
+/* Hover Effect: Card lifts up and glows */
+.mediaCard:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: rgba(0, 210, 255, 0.3);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 210, 255, 0.1);
+}
+
+.thumbnailWrapper {
+  position: relative;
   width: 100%;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
 }
 
@@ -75,80 +116,83 @@
   transition: transform 0.5s ease;
 }
 
+/* Hover Effect: Image slightly zooms in */
 .mediaCard:hover .thumbnail {
-  transform: scale(1.05);
+  transform: scale(1.08);
 }
 
-/* Floating Badges over the image */
-.mediaTypeBadge {
+/* --- GLASSMORPHISM PLAY OVERLAY --- */
+.playOverlay {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: var(--text-primary);
-  border: 1px solid rgba(255,255,255,0.1);
-}
-
-.durationBadge {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  background: rgba(0, 0, 0, 0.7);
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-/* Typography Inside the Card */
-.cardContent {
-  padding: 1rem;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px); /* The Frosted Glass Effect */
   display: flex;
-  flex-direction: column;
-  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.3s ease;
 }
 
-.category {
+.mediaCard:hover .playOverlay {
+  opacity: 1;
+}
+
+.playButton {
+  background: var(--accent-cyan);
+  color: black;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4);
+}
+
+.mediaCard:hover .playButton {
+  transform: translateY(0);
+}
+
+.matchBadge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: rgba(16, 185, 129, 0.9);
+  color: #fff;
   font-size: 0.7rem;
-  color: var(--accent-cyan);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: 600;
-  margin-bottom: 0.4rem;
+  font-weight: 800;
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  z-index: 2;
+}
+
+.cardInfo {
+  padding: 1rem;
 }
 
 .title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
   color: var(--text-primary);
-  line-height: 1.3;
+  font-size: 1rem;
+  margin: 0 0 0.25rem 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.description {
-  font-size: 0.85rem;
+.type {
   color: var(--text-secondary);
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  font-size: 0.8rem;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes pulse {
-  0% { opacity: 0.6; }
-  50% { opacity: 1; }
-  100% { opacity: 0.6; }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

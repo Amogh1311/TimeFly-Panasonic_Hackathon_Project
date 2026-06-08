@@ -1,134 +1,206 @@
 .chatContainer {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
+  background: rgba(10, 15, 26, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
+  height: 100%;
+  max-height: 1200px;
   display: flex;
   flex-direction: column;
-  height: 100%;
   overflow: hidden;
-  animation: fadeIn 0.4s ease-out;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .chatHeader {
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--border-color);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.02);
-}
-
-.chatHeader h3 {
-  font-size: 1.1rem;
-  color: var(--text-primary);
-  margin: 0;
-}
-
-.onlineIndicator {
-  color: var(--accent-success);
-  font-size: 0.8rem;
-  font-weight: 600;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-}
-
-/* Chat History Area */
-.messageList {
-  flex-grow: 1;
-  padding: 1.5rem;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
   gap: 1rem;
 }
 
-.messageList::-webkit-scrollbar {
-  width: 6px;
-}
-.messageList::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 10px;
+.statusIndicator {
+  width: 12px;
+  height: 12px;
+  background: var(--accent-success);
+  border-radius: 50%;
+  position: relative;
 }
 
-/* Bubble Positioning */
-.messageWrapper {
+.ping {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: var(--accent-success);
+  border-radius: 50%;
+  animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.chatHeader h3 {
+  font-size: 1rem;
+  color: var(--text-primary);
+  margin: 0 0 0.2rem 0;
+}
+
+.subStatus {
+  font-size: 0.75rem;
+  color: var(--accent-success);
+  margin: 0;
+}
+
+.messageList {
+  flex: 1 1 0;
+  overflow-y: auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Custom Sleek Scrollbar */
+.messageList::-webkit-scrollbar { width: 6px; }
+.messageList::-webkit-scrollbar-track { background: transparent; }
+.messageList::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+.messageList::-webkit-scrollbar-thumb:hover { background: rgba(0, 210, 255, 0.5); }
+
+.emptyState {
+  margin: auto;
+  text-align: center;
+  color: var(--text-secondary);
+  animation: fadeIn 0.5s ease-out;
+}
+
+.emptyIcon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.msgRow {
   display: flex;
   width: 100%;
+  animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
-.myMessage {
-  justify-content: flex-end;
-}
+.meRow { justify-content: flex-end; }
+.themRow { justify-content: flex-start; }
 
-.partnerMessage {
-  justify-content: flex-start;
-}
-
-.messageBubble {
+.msgBubble {
   max-width: 75%;
-  padding: 0.75rem 1rem;
+  padding: 0.85rem 1.25rem;
   border-radius: 16px;
-  font-size: 0.9rem;
-  line-height: 1.4;
+  position: relative;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-.myMessage .messageBubble {
-  background: var(--accent-blue);
-  color: white;
+.meRow .msgBubble {
+  background: linear-gradient(135deg, rgba(0, 210, 255, 0.15), rgba(0, 210, 255, 0.05));
+  border: 1px solid rgba(0, 210, 255, 0.3);
   border-bottom-right-radius: 4px;
 }
 
-.partnerMessage .messageBubble {
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
+.themRow .msgBubble {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-bottom-left-radius: 4px;
 }
 
-/* Input Form Area */
-.inputArea {
-  padding: 1rem;
-  border-top: 1px solid var(--border-color);
-  display: flex;
-  gap: 0.75rem;
-  background: rgba(255, 255, 255, 0.01);
+.senderTag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.textInput {
+.meRow .senderTag { color: var(--accent-cyan); }
+.themRow .senderTag { color: var(--text-secondary); }
+
+.msgText {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.timestamp {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  display: block;
+  text-align: right;
+  margin-top: 0.5rem;
+}
+
+.inputArea {
+  padding: 1rem 1.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.inputWrapper {
+  display: flex;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  padding: 0.25rem;
+  transition: all 0.3s ease;
+}
+
+.inputWrapper:focus-within {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 15px rgba(0, 210, 255, 0.15);
+}
+
+.chatInput {
   flex-grow: 1;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 20px;
+  background: transparent;
+  border: none;
   padding: 0.75rem 1rem;
   color: var(--text-primary);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   outline: none;
-  transition: var(--transition-smooth);
 }
 
-.textInput:focus {
-  border-color: var(--accent-cyan);
-  box-shadow: 0 0 8px rgba(0, 210, 255, 0.15);
+.chatInput::placeholder {
+  color: var(--text-muted);
 }
 
 .sendButton {
   background: var(--accent-cyan);
   color: #000;
   border: none;
-  border-radius: 20px;
-  padding: 0 1.25rem;
-  font-weight: 700;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: var(--transition-smooth);
+  transition: all 0.2s ease;
 }
 
-.sendButton:hover {
+.sendButton:disabled {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.3);
+  cursor: not-allowed;
+}
+
+.sendButton:not(:disabled):hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 10px rgba(0, 210, 255, 0.3);
+  box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+@keyframes ping {
+  75%, 100% { transform: scale(2.5); opacity: 0; }
 }

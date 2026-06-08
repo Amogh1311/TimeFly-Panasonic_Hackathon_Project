@@ -31,11 +31,12 @@
 .questionList {
   flex-grow: 1;
   overflow-y: auto;
-  display: flex;
+  display: flex;    
   flex-direction: column;
   gap: 1.5rem;
   padding-right: 0.5rem;
   margin-bottom: 1.5rem;
+  padding-bottom: 150px;
 }
 
 .questionList::-webkit-scrollbar {
@@ -254,6 +255,113 @@
 .secondaryButton:hover {
   background: rgba(255, 255, 255, 0.05);
   color: var(--text-primary);
+}
+
+/* --- NEW TERMINATE CONNECTION BUTTON --- */
+.dangerButton {
+  padding: 1rem;
+  background: rgba(255, 68, 68, 0.1);
+  color: #ff4444;
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.dangerButton:hover {
+  background: rgba(255, 68, 68, 0.2);
+  border-color: #ff4444;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 68, 68, 0.2);
+}
+
+.dangerBadge {
+  background: rgba(255, 68, 68, 0.15);
+  color: #ff4444;
+  border: 1px solid rgba(255, 68, 68, 0.4);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  box-shadow: 0 0 15px rgba(255, 68, 68, 0.2);
+}
+
+/* =========================================
+   NEW CUSTOM CONFIRMATION MODAL
+   ========================================= */
+.modalOverlay {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(5, 8, 15, 0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  border-radius: 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modalBox {
+  background: var(--bg-surface);
+  border: 1px solid rgba(255, 68, 68, 0.4);
+  padding: 1.5rem;
+  border-radius: 16px;
+  width: 85%;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 68, 68, 0.15);
+}
+
+.modalBox h3 {
+  color: #ff4444;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+}
+
+.modalBox p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin-bottom: 1.5rem;
+}
+
+.modalActions {
+  display: flex;
+  gap: 1rem;
+}
+
+.modalCancelBtn {
+  flex: 1;
+  padding: 0.75rem;
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.modalCancelBtn:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.modalConfirmBtn {
+  flex: 1;
+  padding: 0.75rem;
+  background: rgba(255, 68, 68, 0.15);
+  color: #ff4444;
+  border: 1px solid rgba(255, 68, 68, 0.4);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.modalConfirmBtn:hover {
+  background: #ff4444;
+  color: white;
 }
 
 @keyframes spin {
